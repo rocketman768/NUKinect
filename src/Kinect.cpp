@@ -6,7 +6,7 @@ Kinect::Kinect(freenect_context *_ctx, int _index)
 {
   _mutex_depth.lock();
   
-  _depth = new uint8_t[ FREENECT_DEPTH_11BIT_SIZE ];
+  _depth = 0;
   _depthTimestamp = 0;
     
   _mutex_depth.unlock();
@@ -14,11 +14,6 @@ Kinect::Kinect(freenect_context *_ctx, int _index)
 
 Kinect::~Kinect()
 {
-  _mutex_depth.lock();
-  
-  delete[] _depth;
-  
-  _mutex_depth.unlock();
 }
 
 // Returns a shared pointer that points to a COPY of the depth data.
@@ -30,7 +25,7 @@ void Kinect::getDepth(uint32_t& lastTimestamp,
   _mutex_depth.lock();
     
   // Don't change 'ret' if it is the same frame.
-  if( lastTimestamp == _depthTimestamp )
+  if( lastTimestamp == _depthTimestamp || _depth == 0 )
   {
     _mutex_depth.unlock();
     return;
