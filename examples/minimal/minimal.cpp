@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <boost/shared_array.hpp>
+#include <stdio.h>
 #include "KinectIO.h"
 
 int main()
