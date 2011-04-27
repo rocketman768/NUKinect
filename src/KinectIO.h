@@ -1,31 +1,30 @@
-#include <libfreenect.hpp>
-#include <inttypes.h>
-#include <boost/shared_array.hpp> // For shared pointers.
+#include "Kinect.h"
 #include "Mutex.h"
 
-class KinectIO : public Freenect::FreenectDevice
+/*! \b KinectIO is a singleton class.
+ */
+class KinectIO
 {
 public:
-  KinectIO(freenect_context *_ctx, int _index);
   ~KinectIO();
   
-  /*! Returns a shared pointer \b ret that points to a COPY of the depth data.
-   *  Also, return  \b retTimestamp by reference. If the internal timestamp
-   *  is the same as \b lastTimestamp , \b ret does not change.
-   */
-  void getDepth(uint32_t lastTimestamp,
-                boost::shared_array<uint8_t>& ret,
-                uint32_t& retTimestamp);
+  //! Get the \b KinectIO instance.
+  static KinectIO& instance();
+  
+  //! Get the \b Kinect variable.
+  Kinect& kinect();
+  
+protected:
+  //! Hidden constructor.
+  KinectIO();
+  //! Hidden copy constructor.
+  KinectIO( const KinectIO& other );
+  //! Hidden assignment operator.
+  KinectIO& operator = ( KinectIO const& other );
   
 private:
   
-  //! Only called by libfreenect!
-  void VideoCallback(void* rgb, uint32_t timestamp);
-  
-  //! Only called by libfreenect!
-  void DepthCallback(void* depth, uint32_t timestamp);
-
-  uint8_t * _depth;
-  Mutex _mutex_depth;
-  uint32_t _depthTimestamp;
+  static KinectIO* _instance;
+  Kinect _kinect;
+  Mutex _instanceMutex;
 };

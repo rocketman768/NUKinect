@@ -1,6 +1,6 @@
 SET( SRC_FILES
+  "Kinect.cpp"
   "KinectIO.cpp"
-
 )
 
 ADD_LIBRARY( NUKinect ${SRC_FILES} )
