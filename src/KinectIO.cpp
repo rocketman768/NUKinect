@@ -1,6 +1,7 @@
 #include "KinectIO.h"
 
-static KinectIO* KinectIO::_instance = 0;
+KinectIO* KinectIO::_instance = 0;
+Mutex KinectIO::_instanceMutex;
 
 KinectIO::~KinectIO()
 {
@@ -8,18 +9,18 @@ KinectIO::~KinectIO()
 }
 
 KinectIO::KinectIO()
-{
-  // Initialize the Kinect variable.
-  
+  : _kinect( _freenect.createDevice<Kinect>(0) )
+{  
   // Start the kinect video stuff.
 }
 
-KinectIO::KinectIO( KinectIO& other )
+KinectIO::KinectIO( const KinectIO& other )
+  : _kinect( _freenect.createDevice<Kinect>(0) )
 {
   // Do nothing.
 }
 
-KinectIO& KinectIO::operator = ( KinectIO const& other )
+const KinectIO& KinectIO::operator = ( KinectIO const& other )
 {
   // Do nothing
   return *this;

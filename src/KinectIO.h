@@ -1,3 +1,7 @@
+#ifndef _KINECTIO_H
+#define _KINECTIO_H
+
+#include <libfreenect.hpp>
 #include "Kinect.h"
 #include "Mutex.h"
 
@@ -17,14 +21,17 @@ public:
 protected:
   //! Hidden constructor.
   KinectIO();
-  //! Hidden copy constructor.
+  //! Hidden copy constructor. Do not use.
   KinectIO( const KinectIO& other );
-  //! Hidden assignment operator.
-  KinectIO& operator = ( KinectIO const& other );
+  //! Hidden assignment operator. Do not use.
+  const KinectIO& operator = ( KinectIO const& other );
   
 private:
   
   static KinectIO* _instance;
-  Kinect _kinect;
-  Mutex _instanceMutex;
+  static Mutex _instanceMutex;
+  Freenect::Freenect _freenect;
+  Kinect& _kinect;
 };
+
+#endif /* _KINECTIO_H */

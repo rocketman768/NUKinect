@@ -23,14 +23,11 @@ Kinect::~Kinect()
 
 // Returns a shared pointer that points to a COPY of the depth data.
 // Also, return 'retFrameNo' by reference.
-void Kinect::getDepth(uint32_t lastTimestamp,
-                        boost::shared_array<uint8_t>& ret,
-                        uint32_t& retTimestamp)
+void Kinect::getDepth(uint32_t& lastTimestamp,
+                        boost::shared_array<uint8_t>& ret)
 {
   // Lock b/c we need to access _depth and _depthTimestamp.
   _mutex_depth.lock();
-  
-  retTimestamp = _depthTimestamp;
     
   // Don't change 'ret' if it is the same frame.
   if( lastTimestamp == _depthTimestamp )
@@ -38,6 +35,9 @@ void Kinect::getDepth(uint32_t lastTimestamp,
     _mutex_depth.unlock();
     return;
   }
+  
+  // Otherwise, change the last timestamp.
+  lastTimestamp = _depthTimestamp;
   
   // Return a shared array that points to a COPY
   // of our _depth data. Since it is shared, it will
