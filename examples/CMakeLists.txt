@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY( minimal )
+ADD_SUBDIRECTORY( viewdemo )
