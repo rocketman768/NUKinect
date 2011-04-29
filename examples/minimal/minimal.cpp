@@ -2,6 +2,7 @@
 #include <inttypes.h>
 #include <boost/shared_array.hpp>
 #include "KinectIO.h"
+#include <iostream>
 
 int main()
 {
@@ -10,6 +11,8 @@ int main()
   
   while(true)
   {
+    std::cout << "Getting one frame...";
     KinectIO::instance().kinect().getDepth(lastTimestamp, depth);
+    std::cout << lastTimestamp << "Finished.\n";
   }
 }
