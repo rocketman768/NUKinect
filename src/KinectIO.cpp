@@ -5,13 +5,17 @@ Mutex KinectIO::_instanceMutex;
 
 KinectIO::~KinectIO()
 {
-  // Shut down and delete _kinect.
+  // Shut down _kinect.
+  _kinect.stopDepth();
+  _kinect.stopVideo();
 }
 
 KinectIO::KinectIO()
   : _kinect( _freenect.createDevice<Kinect>(0) )
 {  
   // Start the kinect video stuff.
+  _kinect.startDepth();
+  _kinect.startVideo();
 }
 
 KinectIO::KinectIO( const KinectIO& other )
@@ -47,3 +51,4 @@ Kinect& KinectIO::kinect()
 {
   return _kinect;
 }
+
