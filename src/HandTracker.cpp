@@ -1,4 +1,5 @@
 #include "HandTracker.h"
+using namespace std;
 
 #include <iostream>
 HandTracker::HandTracker() :_threshold(170), _blobMin(20),_blobMax(90)
