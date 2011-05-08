@@ -51,6 +51,7 @@ int HandTracker::SetNewFrame( cv::Mat& depthf )
 	{
 		_currentPosition = cv::Vec3d(0,0,0);
 	}
+    return 1;    
 }
 
 cv::Vec3d HandTracker::getCurrentPosition()

@@ -1,12 +1,27 @@
 #include <math.h>
 #include "DepthMap.h"
-
+#include <cstring>
+#include <stdint.h>
 
 CDepthMap::CDepthMap(void)
 {
 	m_ncols = 0;
 	m_nrows = 0;
 	m_depthVals = NULL;
+}
+
+CDepthMap::CDepthMap( int ncols, int nrows, uchar* raw_data )
+{
+	m_nrows = nrows;
+	m_ncols = ncols;
+
+	m_depthVals = new float[nrows*ncols];	
+	uint16_t *data  = (uint16_t*)raw_data;
+	for (int i=0;i<nrows;i++)
+		for (int j=0;j<ncols;++j)
+		{
+			m_depthVals[i*ncols+j] = data[i*ncols+j];
+		}
 }
 
 CDepthMap::~CDepthMap(void)
@@ -135,5 +150,14 @@ float CDepthMap::AvgNonZeroDepth() const
 		return 0;
 	else
 		return sum/count;
+}
+
+void CDepthMap::convertToChar( uchar* dst ) const
+{
+	for (int i=0;i<m_nrows;i++)
+		for (int j=0;j<m_ncols;++j)
+		{
+			dst[i*m_ncols+j] = (uint8_t)(m_depthVals[i*m_ncols+j]*255.0/2048.0);
+		}
 }
 

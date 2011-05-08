@@ -5,6 +5,8 @@ SET( SRC_FILES
   "nuKinectView4Buffer.cpp"
   "MouseController.cpp"
   "HandTracker.cpp"
+  "DepthMapBinFileIO.cpp"
+  "DepthMap.cpp"
 )
 
 ADD_LIBRARY( NUKinect ${SRC_FILES} )
