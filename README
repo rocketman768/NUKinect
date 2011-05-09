@@ -1,3 +1,10 @@
+Before build, please install the following packages:
+
+libfreenect
+Opencv 2.2
+
+
+
 To build:
 
 cd ..
