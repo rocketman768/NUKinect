@@ -8,6 +8,8 @@ SET( SRC_FILES
   "KinectWindow.cpp"
   "GLWidget.cpp"
   "qtlogo.cpp"
+  "DepthMapBinFileIO.cpp"
+  "DepthMap.cpp"
 )
 
   # another list, this time it includes all header files that should be treated with moc
