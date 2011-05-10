@@ -12,12 +12,12 @@ SET( SRC_FILES
   "DepthMap.cpp"
 )
 
-  # another list, this time it includes all header files that should be treated with moc
-  SET( SAMPLE_MOC_HDRS
-                GLWidget.h
-                KinectWindow.h
-                qtlogo.h  
-  )
+# All header files that should be moc'd.
+SET( MOC_HDRS
+  "GLWidget.h"
+  "KinectWindow.h"
+  "qtlogo.h" 
+)
   
 
 SET(QT_USE_QTOPENGL TRUE)
@@ -28,15 +28,13 @@ FIND_PACKAGE( OpenCV REQUIRED )
 
 INCLUDE( ${QT_USE_FILE} )
 INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIRS} 
-     ${OpenCV_INCLUDE_DIR}
-  ${QT_INCLUDE_DIR}/QtOpenGL
-      )  
+                     ${OpenCV_INCLUDE_DIR}
+                     ${QT_INCLUDE_DIR}/QtOpenGL
+)
 
-QT4_WRAP_CPP( SAMPLE_MOC_SRCS ${SAMPLE_MOC_HDRS} )
+QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
-
-
-ADD_LIBRARY( NUKinect ${SRC_FILES} ${SAMPLE_MOC_SRCS})
+ADD_LIBRARY( NUKinect ${SRC_FILES} ${MOC_SRCS})
 
 TARGET_LINK_LIBRARIES( NUKinect 
   freenect 
@@ -45,4 +43,5 @@ TARGET_LINK_LIBRARIES( NUKinect
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${OpenCV_LIBS} 
-  )
+)
+
