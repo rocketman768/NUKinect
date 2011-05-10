@@ -1,4 +1,3 @@
 ADD_SUBDIRECTORY( minimal )
 ADD_SUBDIRECTORY( viewdemo )
 ADD_SUBDIRECTORY( wholedemo )
-ADD_SUBDIRECTORY( IOdemo )
