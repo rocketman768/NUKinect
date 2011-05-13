@@ -1,1 +1,0 @@
-/usr/bin/c++   -g -Wall    CMakeFiles/wholedemo.dir/wholedemo.cpp.o  -o wholedemo -rdynamic ../../src/libNUKinect.a -lfreenect -lpthread -lglut -lXmu -lXi -lGLU -lGL -lSM -lICE -lX11 -lXext -lopencv_core -lopencv_highgui 
