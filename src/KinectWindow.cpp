@@ -72,9 +72,23 @@ int KinectWindow::destroyInstance() {
   return 1;
 }
 
+int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
+  _mutex.lock();
+
+  int r = glWidget->loadPtCloud(src, numPts);
+
+  this->update();
+
+  _mutex.unlock();
+  return r;
+}
+
 int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind) {
 
+  _mutex.lock();
+
   if (buffer_ind >= numImageLabels) {
+    _mutex.unlock();
     return 1;
   }
 
@@ -95,9 +109,9 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
 
   } // switch spec.getMode()
 
-  _mutex.lock();
+
   QImage img(buffer_ptr, imageWidth, imageHeight, QImage::Format_RGB888);
-  _mutex.unlock();
+
 
   switch (buffer_ind) {
   case 0:
@@ -114,6 +128,8 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
   } // switch buffer_ind
 
   this->update();
+  
+  _mutex.unlock();
   //  this->repaint();
   return 0;
 }
@@ -129,20 +145,21 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
 //}
 
 
-KinectWindow::KinectWindow(){
+KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
   //  _mutex.lock();
 
-  _leftImageLabel = new QLabel;
+  _leftImageLabel = new QLabel(this);
   _leftImageLabel->setMinimumSize(imageSize);
-  _rightImageLabel = new QLabel;
+  _rightImageLabel = new QLabel(this);
   _rightImageLabel->setMinimumSize(imageSize);
 
-  glWidget = new GLWidget;
+  glWidget = new GLWidget(this);
 
   xSlider = createSlider();
   ySlider = createSlider();
   zSlider = createSlider();
+  viewSizeSlider = createViewSizeSlider();
 
   connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
   connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
@@ -150,21 +167,24 @@ KinectWindow::KinectWindow(){
   connect(glWidget, SIGNAL(yRotationChanged(int)), ySlider, SLOT(setValue(int)));
   connect(zSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setZRotation(int)));
   connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
+  connect(viewSizeSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setViewSize(int)));
+  connect(glWidget, SIGNAL(viewSizeChanged(int)), viewSizeSlider, SLOT(setValue(int)));
 
-
-  QGridLayout *mainLayout = new QGridLayout;
+  QGridLayout *mainLayout = new QGridLayout(this);
   mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 1  );
   mainLayout->addWidget(_rightImageLabel, 0, 1, 1, 6  );
   mainLayout->addWidget(glWidget, 1, 0, 1, 1);
   mainLayout->addWidget(xSlider, 1, 1, 1, 1);
   mainLayout->addWidget(ySlider, 1, 2, 1, 1);
   mainLayout->addWidget(zSlider, 1, 3, 1, 1);
+  mainLayout->addWidget(viewSizeSlider, 1, 4, 1, 1);
   mainLayout->setSizeConstraint(QLayout::SetFixedSize);
   setLayout(mainLayout);
 
   xSlider->setValue(15 * 16);
   ySlider->setValue(345 * 16);
   zSlider->setValue(0 * 16);
+  viewSizeSlider->setValue(5 * 100);
   setWindowTitle(tr("Depth Vision - Computational Vision Group, Northwestern Univeristy"));
 
 
@@ -184,7 +204,7 @@ KinectWindow::KinectWindow(){
 
 QSlider *KinectWindow::createSlider()
 {
-  QSlider *slider = new QSlider(Qt::Vertical);
+  QSlider *slider = new QSlider(Qt::Vertical, this);
   slider->setRange(0, 360 * 16);
   slider->setSingleStep(16);
   slider->setPageStep(15 * 16);
@@ -192,6 +212,17 @@ QSlider *KinectWindow::createSlider()
   slider->setTickPosition(QSlider::TicksRight);
   return slider;
 }
+
+QSlider *KinectWindow::createViewSizeSlider() {
+  QSlider *slider = new QSlider(Qt::Vertical, this);
+  slider->setRange(viewSizeMin, viewSizeMax);
+  slider->setSingleStep(10);
+  slider->setPageStep(10 * 10);
+  slider->setTickInterval(10 * 10);
+  slider->setTickPosition(QSlider::TicksRight);
+  return slider;
+}
+
 
 void KinectWindow::keyPressEvent(QKeyEvent *e)
 {

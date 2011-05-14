@@ -7,7 +7,7 @@ SET( SRC_FILES
   "HandTracker.cpp"
   "KinectWindow.cpp"
   "GLWidget.cpp"
-  "qtlogo.cpp"
+  "PtCloud.cpp"
   "DepthMapBinFileIO.cpp"
   "DepthMap.cpp"
 )
@@ -16,7 +16,7 @@ SET( SRC_FILES
 SET( MOC_HDRS
   "GLWidget.h"
   "KinectWindow.h"
-  "qtlogo.h" 
+  "PtCloud.h"
 )
   
 

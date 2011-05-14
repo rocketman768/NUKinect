@@ -44,10 +44,13 @@
 
 #include <QGLWidget>
 
-#include "Mutex.h"
 
 
-class QtLogo;
+class PtCloud;
+
+
+const int viewSizeMin = 10;
+const int viewSizeMax = 1000;
 
 //! [0]
 class GLWidget : public QGLWidget
@@ -56,8 +59,9 @@ class GLWidget : public QGLWidget
 
 public:
     GLWidget(QWidget *parent = 0);
-    ~GLWidget();
+    //~GLWidget();
 
+    int loadPtCloud(const GLfloat* src, int numPts);
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 //! [0]
@@ -67,11 +71,13 @@ public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
+    void setViewSize(int s);
 
 signals:
     void xRotationChanged(int angle);
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
+    void viewSizeChanged(int s);
 //! [1]
 
 //! [2]
@@ -81,20 +87,21 @@ protected:
     void resizeGL(int width, int height);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
 //! [2]
 
 
-    Mutex _mutex;
-
 //! [3]
 private:
-    QtLogo *logo;
+    PtCloud *cloud;
+    int _viewSize;
+    //    QtLogo *logo;
     int xRot;
     int yRot;
     int zRot;
     QPoint lastPos;
-    QColor qtGreen;
-    QColor qtPurple;
+    //    QColor qtGreen;
+     QColor qtPurple;
 };
 //! [3]
 

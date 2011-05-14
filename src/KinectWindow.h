@@ -45,6 +45,7 @@
 
 #include "Mutex.h"
 
+#include <QGLWidget>
 #include <QWidget>
 #include <QApplication>
 
@@ -79,24 +80,29 @@ public:
     int destroyInstance();
 
     //int startDrawLoop();
-
+    int loadPtCloud(const GLfloat* src, int numPts);
     int setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
     void paintEvent(QPaintEvent *event);
-    KinectWindow();
+
+    KinectWindow(QWidget *parent=0);
 
     Mutex _mutex;
 
 private:
     QSlider *createSlider();
+    QSlider *createViewSizeSlider();
 
     QLabel *_leftImageLabel;
     QLabel *_rightImageLabel;
 
     QImage _leftImage;
     QImage _rightImage;
+
+    QPixmap _leftPixmap;
+    QPixmap _rightPixmap;
 
     bool _leftUpdate;
     bool _rightUpdate;
@@ -105,6 +111,7 @@ private:
     QSlider *xSlider;
     QSlider *ySlider;
     QSlider *zSlider;
+    QSlider *viewSizeSlider;
 
     static KinectWindow * _pInstance;
     //static QApplication * _pQapp;
