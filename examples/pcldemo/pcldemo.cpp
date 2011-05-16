@@ -60,10 +60,10 @@ int main()
 				<< coefficients.values[3] << std::endl;
 
 			std::cout << "Model inliers: " << inliers.indices.size () << std::endl;
-			for (size_t i = 0; i < inliers.indices.size (); ++i)
-				std::cout << inliers.indices[i] << "    " << cloud->points[inliers.indices[i]].x << " "
-				<< cloud->points[inliers.indices[i]].y << " "
-				<< cloud->points[inliers.indices[i]].z << std::endl;
+			// for (size_t i = 0; i < inliers.indices.size (); ++i)
+			// 	std::cout << inliers.indices[i] << "    " << cloud->points[inliers.indices[i]].x << " "
+			// 	<< cloud->points[inliers.indices[i]].y << " "
+			// 	<< cloud->points[inliers.indices[i]].z << std::endl;
 			viewer.showCloud (cloud);
 			char ch;
 			cin>>ch;
