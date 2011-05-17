@@ -25,7 +25,7 @@ Kinect::~Kinect()
 
 // Returns a shared pointer that points to a COPY of the depth data.
 // Also, return 'lastTimestamp' by reference.
-void Kinect::getDepth(uint32_t& lastTimestamp,
+bool Kinect::getDepth(uint32_t& lastTimestamp,
                       boost::shared_array<uint8_t>& ret)
 {
   // Lock b/c we need to access _depth and _depthTimestamp.
@@ -35,7 +35,7 @@ void Kinect::getDepth(uint32_t& lastTimestamp,
   if( lastTimestamp == _depthTimestamp || _depth == 0 )
   {
     _mutex_depth.unlock();
-    return;
+    return (_depth!=0);
   }
   
   // Otherwise, change the last timestamp.
@@ -55,11 +55,12 @@ void Kinect::getDepth(uint32_t& lastTimestamp,
     
   // Release lock.
   _mutex_depth.unlock();
+  return true;
 }
  
 // Returns a shared pointer that points to a COPY of the rgb data.
 // Also, return 'lastTimestamp' by reference.
-void Kinect::getRgb(uint32_t& lastTimestamp,
+bool Kinect::getRgb(uint32_t& lastTimestamp,
                     boost::shared_array<uint8_t>& ret)
 {
   // Lock b/c we need to access _rgb and _rgbTimestamp.
@@ -69,7 +70,7 @@ void Kinect::getRgb(uint32_t& lastTimestamp,
   if( lastTimestamp == _rgbTimestamp || _rgb == 0 )
   {
     _mutex_rgb.unlock();
-    return;
+    return (_rgb!=0);
   }
   
   // Otherwise, change the last timestamp.
@@ -89,6 +90,7 @@ void Kinect::getRgb(uint32_t& lastTimestamp,
     
   // Release lock.
   _mutex_rgb.unlock();
+  return true;
 }
 
 // Only gets called by libfreenect.
