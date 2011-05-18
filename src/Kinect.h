@@ -14,19 +14,21 @@ public:
   ~Kinect();
   
   /*! Takes \b lastTimestamp as input.
-   *  Returns a shared pointer \b ret that points to a COPY of the depth data.
+   *  Returns a shared pointer \b ret by reference that points to a COPY of the depth data.
    *  Also, update  \b lastTimestamp by reference. If the internal timestamp
    *  is the same as \b lastTimestamp , \b ret does not change.
+   *  The bool return value is false if the data in \b ret may be invalid.
    */
-  void getDepth(uint32_t& lastTimestamp,
+  bool getDepth(uint32_t& lastTimestamp,
                 boost::shared_array<uint8_t>& ret);
 
   /*! Takes \b lastTimestamp as input.
-   *  Returns a shared pointer \b ret that points to a COPY of the RGB data.
+   *  Returns a shared pointer \b ret by reference that points to a COPY of the RGB data.
    *  Also, update  \b lastTimestamp by reference. If the internal timestamp
    *  is the same as \b lastTimestamp , \b ret does not change.
+   *  The bool return value is false if the data in \b ret may be invalid.
    */
-  void getRgb(uint32_t& lastTimestamp,
+  bool getRgb(uint32_t& lastTimestamp,
               boost::shared_array<uint8_t>& ret);
   
 private:
