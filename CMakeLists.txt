@@ -4,6 +4,7 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 #==============Set Directories=================
 SET( src_DIR "src/" )
 SET( examples_DIR "examples/" )
+SET( doc_DIR "doc/" )
 
 INCLUDE_DIRECTORIES( ${src_DIR} )
 
@@ -41,6 +42,7 @@ ENDIF()
 
 #=============Process Subdirectories============
 ADD_SUBDIRECTORY( ${src_DIR} )
+ADD_SUBDIRECTORY( ${doc_DIR} )
 
 IF( ${BUILD_EXAMPLES} )
   ADD_SUBDIRECTORY( ${examples_DIR} )
