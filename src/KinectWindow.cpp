@@ -85,10 +85,8 @@ int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
 
 int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind) {
 
-  _mutex.lock();
 
   if (buffer_ind >= numImageLabels) {
-    _mutex.unlock();
     return 1;
   }
 
@@ -112,6 +110,7 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
 
   QImage img(buffer_ptr, imageWidth, imageHeight, QImage::Format_RGB888);
 
+  _mutex.lock();
 
   switch (buffer_ind) {
   case 0:
@@ -127,9 +126,10 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
     ;
   } // switch buffer_ind
 
-  this->update();
-  
   _mutex.unlock();
+
+  this->update();
+
   //  this->repaint();
   return 0;
 }
@@ -147,8 +147,6 @@ int KinectWindow::setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec,
 
 KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
-  //  _mutex.lock();
-
   _leftImageLabel = new QLabel(this);
   _leftImageLabel->setMinimumSize(imageSize);
   _rightImageLabel = new QLabel(this);
@@ -161,6 +159,8 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   zSlider = createSlider();
   viewSizeSlider = createViewSizeSlider();
 
+  _openVideoFileButton = new QPushButton(this);
+
   connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
   connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
   connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
@@ -169,6 +169,8 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
   connect(viewSizeSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setViewSize(int)));
   connect(glWidget, SIGNAL(viewSizeChanged(int)), viewSizeSlider, SLOT(setValue(int)));
+  connect( _openVideoFileButton, SIGNAL( clicked() ), this, SLOT( openFile() ) ); 
+
 
   QGridLayout *mainLayout = new QGridLayout(this);
   mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 1  );
@@ -178,6 +180,7 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   mainLayout->addWidget(ySlider, 1, 2, 1, 1);
   mainLayout->addWidget(zSlider, 1, 3, 1, 1);
   mainLayout->addWidget(viewSizeSlider, 1, 4, 1, 1);
+  mainLayout->addWidget(_openVideoFileButton, 1, 5, 1, 1);
   mainLayout->setSizeConstraint(QLayout::SetFixedSize);
   setLayout(mainLayout);
 
@@ -191,15 +194,29 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   QImage blackImg(imageWidth, imageHeight, QImage::Format_RGB888);
   blackImg.fill(0);
 
+  _mutex.lock();
+
   _leftImage = blackImg;
   _rightImage = blackImg;
 
+  _mutex.unlock();
 
   _leftUpdate = false;
   _rightUpdate = false;
 
-  //  _mutex.unlock();
+}
 
+void KinectWindow::openFile() {
+
+  //  _mutex.lock();
+  QString path;
+    
+  path = QFileDialog::getOpenFileName(
+				      this,
+				      "Choose a file to open",
+				      QString::null,
+				      QString::null);
+  //_mutex.unlock();
 }
 
 QSlider *KinectWindow::createSlider()
@@ -226,18 +243,18 @@ QSlider *KinectWindow::createViewSizeSlider() {
 
 void KinectWindow::keyPressEvent(QKeyEvent *e)
 {
-  // _mutex.lock();
+  //_mutex.lock();
 
   if (e->key() == Qt::Key_Escape)
     close();
   else
     QWidget::keyPressEvent(e);
-  // _mutex.unlock();
+  //_mutex.unlock();
 }
 
 void KinectWindow::paintEvent(QPaintEvent *e)
 {
-  //_mutex.lock();
+  _mutex.lock();
 
   if (_leftUpdate) {
     _leftImageLabel->setPixmap(QPixmap::fromImage(_leftImage));
@@ -249,7 +266,8 @@ void KinectWindow::paintEvent(QPaintEvent *e)
     _rightUpdate = false;
   }
 
+  _mutex.unlock();
+
   QWidget::paintEvent(e);
 
-  //_mutex.unlock();
 }
