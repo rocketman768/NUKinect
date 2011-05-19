@@ -6,11 +6,12 @@ cd build
 cmake ../NUKinect
 make
 
+
 ==CMake Options==
 NOTE: Need to set CMAKE_INCLUDE_PATH to /usr/include or whatever.
 
 BUILD_EXAMPLES = ON - Build example programs
-DEGUG_MODE = OFF - Build with debug flags
+DEGUG_MODE = ON - Build with debug flags
 
 ==make Targets==
 make doc - Make doxygen documentation
