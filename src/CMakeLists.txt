@@ -8,10 +8,13 @@ SET( SRC_FILES
   "PtCloud.cpp"
   "DepthMapBinFileIO.cpp"
   "DepthMap.cpp"
+  "FileKinectInputWidget.cpp"
 )
 
 # All header files that should be moc'd.
 SET( MOC_HDRS
+  "FileKinectInputWidget.h"
+  "KinectInputWidget.h"
   "GLWidget.h"
   "KinectWindow.h"
 )

@@ -6,4 +6,8 @@ IF( DOXYGEN_CMD )
                      COMMAND ${DOXYGEN_CMD} Doxyfile
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                    )
+ELSE()
+  ADD_CUSTOM_TARGET( doc
+                     COMMAND "echo" "You do not have Doxygen."
+                   )
 ENDIF()

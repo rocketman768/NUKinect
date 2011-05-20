@@ -42,7 +42,7 @@
 #ifndef KINECT_WINDOW_H
 #define KINECT_WINDOW_H
 
-
+#include "KinectInputWidget.h"
 #include "Mutex.h"
 
 #include <QGLWidget>
@@ -52,7 +52,6 @@
 QT_BEGIN_NAMESPACE
 class QSlider;
 class QLabel;
-class QPushButton;
 QT_END_NAMESPACE
 //! [0]
 class GLWidget;
@@ -82,10 +81,30 @@ public:
 
     //int startDrawLoop();
     int loadPtCloud(const GLfloat* src, int numPts);
-    int setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);
+    int loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);
+    
+
+    /*! Takes \b lastTimestamp as input.
+     *  Returns a shared pointer \b ret by reference that points to a COPY of the depth data.
+     *  Also, update  \b lastTimestamp by reference. If the internal timestamp
+     *  is the same as \b lastTimestamp , \b ret does not change.
+     *  The bool return value is false if the data in \b ret may be invalid.
+     */
+    bool getDepth(uint32_t& lastTimestamp,
+		  boost::shared_array<uint8_t>& ret);
+
+    /*! Takes \b lastTimestamp as input.
+     *  Returns a shared pointer \b ret by reference that points to a COPY of the RGB data.
+     *  Also, update  \b lastTimestamp by reference. If the internal timestamp
+     *  is the same as \b lastTimestamp , \b ret does not change.
+     *  The bool return value is false if the data in \b ret may be invalid.
+     */
+    bool getRgb(uint32_t& lastTimestamp,
+		boost::shared_array<uint8_t>& ret);
+
 
 public slots:
-    void openFile();
+
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -116,8 +135,7 @@ private:
     QSlider *ySlider;
     QSlider *zSlider;
     QSlider *viewSizeSlider;
-
-    QPushButton *_openVideoFileButton;
+    KinectInputWidget *_inputWidget;
 
     static KinectWindow * _pInstance;
     //static QApplication * _pQapp;
