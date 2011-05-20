@@ -5,7 +5,6 @@
 #include <iostream>
 #include <pthread.h>
 #include "KinectIO.h"
-#include "wholedemo.hpp"
 #include "KinectWindow.h"
 #include "HandTracker.h"
 #include "MouseController.h"

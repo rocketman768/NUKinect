@@ -1,8 +1,6 @@
 SET( SRC_FILES
   "Kinect.cpp"
   "KinectIO.cpp"
-  "nuKinectView.cpp"
-  "nuKinectView4Buffer.cpp"
   "MouseController.cpp"
   "HandTracker.cpp"
   "KinectWindow.cpp"
@@ -16,7 +14,6 @@ SET( SRC_FILES
 SET( MOC_HDRS
   "GLWidget.h"
   "KinectWindow.h"
-  "PtCloud.h"
 )
   
 

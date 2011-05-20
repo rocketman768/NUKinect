@@ -52,6 +52,7 @@
 QT_BEGIN_NAMESPACE
 class QSlider;
 class QLabel;
+class QPushButton;
 QT_END_NAMESPACE
 //! [0]
 class GLWidget;
@@ -83,6 +84,9 @@ public:
     int loadPtCloud(const GLfloat* src, int numPts);
     int setBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);
 
+public slots:
+    void openFile();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void paintEvent(QPaintEvent *event);
@@ -112,6 +116,8 @@ private:
     QSlider *ySlider;
     QSlider *zSlider;
     QSlider *viewSizeSlider;
+
+    QPushButton *_openVideoFileButton;
 
     static KinectWindow * _pInstance;
     //static QApplication * _pQapp;
