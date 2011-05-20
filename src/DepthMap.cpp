@@ -161,3 +161,11 @@ void CDepthMap::convertToChar( uchar* dst ) const
 		}
 }
 
+void CDepthMap::convertToInt( uchar* dst ) const
+{
+	for (int i=0;i<m_nrows;i++)
+		for (int j=0;j<m_ncols;++j)
+		{
+			dst[i*m_ncols+j] = (uint16_t)(m_depthVals[i*m_ncols+j]);
+		}
+}
