@@ -10,7 +10,11 @@ class PtCloud : public QObject {
  public:
   PtCloud(QObject *parent);
   //~PtCloud();
+
+  //! Draw the point cloud by OpenGL functions.
   void draw();
+
+  //! Copies the data of \b src to the inside buffer of \b PtCloud.
   int copyToBuffer(const GLfloat* src, int numPts);
 
  protected:

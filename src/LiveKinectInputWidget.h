@@ -1,18 +1,16 @@
-#ifndef KINECT_INPUT_WIDGET_H
-#define KINECT_INPUT_WIDGET_H
+#ifndef LIVE_KINECT_INPUT_WIDGET_H
+#define LIVE_KINECT_INPUT_WIDGET_H
 
-#include <boost/shared_array.hpp>
+#include "KinectInputWidget.h"
 
-#include <QWidget>
-#include <inttypes.h>
-
-//! The input interface for both realtime (\b LiveKinectInputWidget) and file (\b FileKinectInputWidget).
-class KinectInputWidget : public QWidget {
+//! Realtime Kinect input.
+class LiveKinectInputWidget : public KinectInputWidget {
   Q_OBJECT
 
 public:
-  KinectInputWidget(QWidget *parent = 0):QWidget(parent) {}
-  
+  LiveKinectInputWidget(QWidget *parent = 0):KinectInputWidget(parent) {}
+
+
   /*! Takes \b lastTimestamp as input.
    *  Returns a shared pointer \b ret by reference that points to a COPY of the depth data.
    *  Also, update  \b lastTimestamp by reference. If the internal timestamp
@@ -20,7 +18,7 @@ public:
    *  The bool return value is false if the data in \b ret may be invalid.
    */
   virtual bool getDepth(uint32_t& lastTimestamp,
-		       boost::shared_array<uint8_t>& ret) = 0;
+		       boost::shared_array<uint8_t>& ret);
 
   /*! Takes \b lastTimestamp as input.
    *  Returns a shared pointer \b ret by reference that points to a COPY of the depth data.
@@ -29,8 +27,7 @@ public:
    *  The bool return value is false if the data in \b ret may be invalid.
    */
   virtual bool getRgb(uint32_t& lastTimestamp,
-		     boost::shared_array<uint8_t>& ret) = 0;
-
+		     boost::shared_array<uint8_t>& ret);
 };
 
-#endif // KINECT_INPUT_WIDGET_H
+#endif // LIVE_KINECT_INPUT_WIDGET_H

@@ -120,8 +120,8 @@ void FileKinectInputWidget::openFile() {
 
   _frameIndex = 0;
 
-  _depth = new uint8_t[_nCols*_nRows];
-  _depthMap.convertToChar(_depth);
+  _depth = new uint8_t[_nCols*_nRows*sizeof(uint16_t)];
+  _depthMap.convertToInt(_depth);
 
   _mutex.unlock();
 }
@@ -147,7 +147,7 @@ void FileKinectInputWidget::nextFrame() {
 
 
   ReadDepthMapBinFileNextFrame(_fp, _nCols, _nRows, _depthMap);
-  _depthMap.convertToChar(_depth);
+  _depthMap.convertToInt(_depth);
 
   _frameIndex++;
 

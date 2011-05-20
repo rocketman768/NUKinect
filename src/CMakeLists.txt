@@ -9,10 +9,12 @@ SET( SRC_FILES
   "DepthMapBinFileIO.cpp"
   "DepthMap.cpp"
   "FileKinectInputWidget.cpp"
+  "LiveKinectInputWidget.cpp"
 )
 
 # All header files that should be moc'd.
 SET( MOC_HDRS
+  "LiveKinectInputWidget.h"
   "FileKinectInputWidget.h"
   "KinectInputWidget.h"
   "GLWidget.h"

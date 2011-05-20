@@ -17,8 +17,8 @@ void* freenect_threadfunc(void* arg) {
   //uint32_t lastTimestampRGB = 99999;
   boost::shared_array<uint8_t> depth;
   boost::shared_array<uint8_t> rgb;
-  cv::Mat depthMat(cv::Size(640,480),CV_8UC1),depthf,depthColor;
-  //  cv::Mat rgbMat(cv::Size(640,480),CV_8UC3);
+  cv::Mat depthMat(cv::Size(640,480),CV_16UC1),depthf,depthColor;
+  cv::Mat rgbMat(cv::Size(640,480),CV_8UC3);
   KinectWindow & myviewcontrol = KinectWindow::instance();
   //HandTracker tracker;
   NUBufferSpec spec(NUBufferSpec::RGB);
@@ -39,8 +39,8 @@ void* freenect_threadfunc(void* arg) {
     //std::cout << lastTimestamp << "Finished.\n";
     
     depthMat.data = (uchar*) depth.get();
-    //depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
-    cv::cvtColor(depthMat,depthColor,CV_GRAY2RGB);
+    depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
+    cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
     myviewcontrol.loadBuffer(depthColor.data,spec,0);
 
     //rgbMat.data = (uchar*) rgb.get();

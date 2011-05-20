@@ -42,6 +42,7 @@
 #include <QtGui>
 
 #include "FileKinectInputWidget.h"
+#include "LiveKinectInputWidget.h"
 #include "GLWidget.h"
 #include "KinectWindow.h"
 
@@ -158,6 +159,9 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
   glWidget = new GLWidget(this);
   _inputWidget = new FileKinectInputWidget(this);
+  
+  _kinectInputButton = new QPushButton("Kinect Input", this);
+  _fileInputButton = new QPushButton("File Input", this);
 
   xSlider = createSlider();
   ySlider = createSlider();
@@ -172,19 +176,22 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
   connect(viewSizeSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setViewSize(int)));
   connect(glWidget, SIGNAL(viewSizeChanged(int)), viewSizeSlider, SLOT(setValue(int)));
+  connect(_kinectInputButton, SIGNAL( clicked() ), this, SLOT( setKinectInput() ) );
+  connect(_fileInputButton, SIGNAL( clicked() ), this, SLOT( setFileInput() ) );
 
-
-  QGridLayout *mainLayout = new QGridLayout(this);
-  mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 1  );
-  mainLayout->addWidget(_rightImageLabel, 0, 1, 1, 6  );
-  mainLayout->addWidget(glWidget, 1, 0, 1, 1);
-  mainLayout->addWidget(xSlider, 1, 1, 1, 1);
-  mainLayout->addWidget(ySlider, 1, 2, 1, 1);
-  mainLayout->addWidget(zSlider, 1, 3, 1, 1);
-  mainLayout->addWidget(viewSizeSlider, 1, 4, 1, 1);
-  mainLayout->addWidget(_inputWidget, 1, 5, 1, 1);
-  mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-  setLayout(mainLayout);
+  _mainLayout = new QGridLayout(this);
+  _mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 1  );
+  _mainLayout->addWidget(_rightImageLabel, 0, 1, 1, 6  );
+  _mainLayout->addWidget(glWidget, 2, 0, 2, 1);
+  _mainLayout->addWidget(xSlider, 2, 1, 2, 1);
+  _mainLayout->addWidget(ySlider, 2, 2, 2, 1);
+  _mainLayout->addWidget(zSlider, 2, 3, 2, 1);
+  _mainLayout->addWidget(viewSizeSlider, 2, 4, 2, 1);
+  _mainLayout->addWidget(_inputWidget, 2, 5, 2, 1);
+  _mainLayout->addWidget(_kinectInputButton, 1, 6, 1, 1);
+  _mainLayout->addWidget(_fileInputButton, 2, 6, 1, 1);
+  _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+  setLayout(_mainLayout);
 
   xSlider->setValue(15 * 16);
   ySlider->setValue(345 * 16);
@@ -211,13 +218,21 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
 bool KinectWindow::getDepth(uint32_t& lastTimestamp,
 			    boost::shared_array<uint8_t>& ret) {
-  return _inputWidget->getDepth(lastTimestamp, ret);
+  _mutexInputWidget.lock();
+  bool r = _inputWidget->getDepth(lastTimestamp, ret);
+  _mutexInputWidget.unlock();
+
+  return r;
 }
 
 
 bool KinectWindow::getRgb(uint32_t& lastTimestamp,
 			  boost::shared_array<uint8_t>& ret) {
-  return _inputWidget->getRgb(lastTimestamp, ret);
+  _mutexInputWidget.lock();
+  bool r = _inputWidget->getRgb(lastTimestamp, ret);
+  _mutexInputWidget.unlock();
+
+  return r;
 }
 
 QSlider *KinectWindow::createSlider()
@@ -269,4 +284,38 @@ void KinectWindow::paintEvent(QPaintEvent *e) {
   QWidget::paintEvent(e);
 
   _mutex.unlock();
+}
+
+void KinectWindow::setKinectInput() {
+
+  _mutexInputWidget.lock();
+
+  if (_inputWidget) {
+    delete _inputWidget;
+    _inputWidget = NULL;
+  }
+
+  _inputWidget = new LiveKinectInputWidget(this);
+  
+  _mutexInputWidget.unlock();
+}
+
+
+void KinectWindow::setFileInput() {
+
+  _mutexInputWidget.lock();
+
+  if (_inputWidget) {
+    delete _inputWidget;
+    _inputWidget = NULL;
+  }
+
+  _inputWidget = new FileKinectInputWidget(this);
+  _mainLayout->addWidget(_inputWidget, 2, 5, 2, 1);
+  _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+  setLayout(_mainLayout);
+
+  _mutexInputWidget.unlock();
+
+  static_cast<FileKinectInputWidget*>(_inputWidget)->openFile();
 }

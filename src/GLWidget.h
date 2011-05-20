@@ -52,7 +52,7 @@ class PtCloud;
 const int viewSizeMin = 10;
 const int viewSizeMax = 1000;
 
-//! [0]
+//! OpenGL widget in Qt
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -61,12 +61,12 @@ public:
     GLWidget(QWidget *parent = 0);
     //~GLWidget();
 
+    //! Load the point cloud data from /b src.
     int loadPtCloud(const GLfloat* src, int numPts);
+
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-//! [0]
 
-//! [1]
 public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
@@ -78,9 +78,7 @@ signals:
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
     void viewSizeChanged(int s);
-//! [1]
 
-//! [2]
 protected:
     void initializeGL();
     void paintGL();
@@ -88,21 +86,19 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-//! [2]
 
 
-//! [3]
 private:
     PtCloud *cloud;
     int _viewSize;
-    //    QtLogo *logo;
+
     int xRot;
     int yRot;
     int zRot;
     QPoint lastPos;
-    //    QColor qtGreen;
+
      QColor qtPurple;
 };
-//! [3]
+
 
 #endif
