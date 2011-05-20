@@ -14,10 +14,9 @@ PtCloud::PtCloud(QObject* parent) : QObject(parent) {
 //}
 
 int PtCloud::copyToBuffer(const GLfloat* src, int numPts) {
-  _numPts = numPts;
-
   _mutex.lock();
 
+  _numPts = numPts;
   _bufferVec.resize(FloatsPerPt*_numPts);
   memcpy(&(_bufferVec[0]), src, numPts*FloatsPerPt*sizeof(float));
 

@@ -1,4 +1,6 @@
-ADD_SUBDIRECTORY( minimal )
+#ADD_SUBDIRECTORY( minimal )
 ADD_SUBDIRECTORY( wholedemo )
 ADD_SUBDIRECTORY( pcldemo )
 ADD_SUBDIRECTORY( IOdemo )
+
+
