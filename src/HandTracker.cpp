@@ -1,10 +1,20 @@
 #include "HandTracker.h"
-using namespace std;
-
+#include <pcl/visualization/cloud_viewer.h>
+#include <algorithm>
 #include <iostream>
-HandTracker::HandTracker() :_threshold(170), _blobMin(20),_blobMax(90)
-{
+#include <vector>
+using namespace std;
+using namespace pcl;
 
+
+bool ComparePoint (PointXYZ i, PointXYZ j)
+{
+	return (i.z<j.z);  
+}
+HandTracker::HandTracker() :_numForegroundPoints(80),_numForegroundPointsValidation(800),_depthDifferenceThreshold(6)
+{
+	_lastPosition.exist =false;
+	_currentPosition.exist = false;
 }
 
 HandTracker::~HandTracker()
@@ -12,61 +22,61 @@ HandTracker::~HandTracker()
 
 }
 
+//TODO add adaptive points number adjustment
 int HandTracker::SetNewFrame( cv::Mat& depthf )
 {
-	cv::Point2f center;
-	float radius=0;
-	cv::Mat blurred, thresholded, thresholded2, output;
-	depthf = 255-depthf;       
-	cv::blur(depthf, blurred, cv::Size(10,10));       
-	cv::threshold( blurred, thresholded, _threshold, 255, CV_THRESH_BINARY);	
-	cv::threshold( blurred, thresholded2, _threshold, 255, CV_THRESH_BINARY);
-	cv::cvtColor( thresholded2, output, CV_GRAY2RGB );
-	vector<vector<cv::Point> > contours;
-	// find em
-	cv::findContours(thresholded, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-	// loop the stored contours
-	for (vector<vector<cv::Point> >::iterator it=contours.begin() ; it < contours.end(); it++ ){
-
-		// center abd radius for current blob
-		// convert the cuntour point to a matrix 
-		vector<cv::Point> pts = *it;
-		cv::Mat pointsMatrix = cv::Mat(pts);
-		// pass to min enclosing circle to make the blob 
-		cv::minEnclosingCircle(pointsMatrix, center, radius);
-
-		cv::Scalar color( 0, 255, 0 );
-		std::cout<<radius<<std::endl;          
-		if (radius > _blobMin && radius < _blobMax) {
-			// draw the blob if it's in range
-			std::cout<<"Yes"<<std::endl;            
-			cv::circle(output, center, radius, color);
-		}
-	} 
+	size_t rows= depthf.rows;
+	size_t cols = depthf.cols;
+	_points.resize(depthf.rows*depthf.cols);
+	int count=0;
+	for (int i=0;i<rows;++i)
+		for (int j=0;j<cols;++j)
+			_points[count++] = PointXYZ(i,j,depthf.at<uint16_t>(i,j));
+// 	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
+// 	PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+// 	cloud->points = _points;	
+// 	viewer.showCloud (cloud,"cloud");
+	nth_element(_points.begin(),_points.begin()+_numForegroundPointsValidation,_points.end(),ComparePoint);
+	nth_element(_points.begin(),_points.begin()+_numForegroundPoints,_points.begin()+_numForegroundPointsValidation,ComparePoint);	
 	_lastPosition = _currentPosition;
-	if (radius > _blobMin && radius < _blobMax)
-	{    		
-		_currentPosition = cv::Vec3d(center.x, center.y,0);
+	//cv::Mat testMat(depthf.size(),CV_8UC3);
+	if (_points[_numForegroundPointsValidation].z-_points[_numForegroundPoints].z>_depthDifferenceThreshold)
+	{
+		float mean_X=0, mean_Y =0,mean_Z=0;
+		for (size_t i=0;i<_numForegroundPoints;++i)
+		{
+			mean_X += _points[i].x;
+			mean_Y += _points[i].y;
+			//testMat.at<cv::Scalar>(_points[i].y,_points[i].x) =cv::Scalar(255,0,0);
+			mean_Z += _points[i].z;
+			//cout<<_points[i].x<<" "<<_points[i].y<<" "<<_points[i].z<<" "<<endl;
+		}
+		mean_X /= _numForegroundPoints;
+		mean_Y /= _numForegroundPoints;
+		mean_Z /= _numForegroundPoints;
+		//cv::imwrite("test.jpg",testMat);
+		cout<<_points[_numForegroundPointsValidation].z-_points[_numForegroundPoints].z<<endl;
+		_currentPosition.position = cv::Vec3f(mean_X,mean_Y,mean_Z);
+        _currentPosition.exist = true;
+        
 	}else
 	{
-		_currentPosition = cv::Vec3d(0,0,0);
+		_currentPosition.exist = false;
 	}
-    return 1;    
+	return 1;
 }
 
-cv::Vec3d HandTracker::getCurrentPosition()
+bool HandTracker::getCurrentPosition(cv::Vec3f& position)
 {
-	return _currentPosition;
+	position = _currentPosition.position;
+	return (_currentPosition.exist);
 }
 
-cv::Vec3d HandTracker::getDifference()
+bool HandTracker::getDifference(cv::Vec3f& difference)
 {
-	return _currentPosition - _lastPosition;
+
+	difference =  _currentPosition.position - _lastPosition.position;
+	return (_currentPosition.exist&&_lastPosition.exist);
 }
 
-void HandTracker::SetParameters( double threshold, double blobMin, double blobMax )
-{
-	_threshold = threshold;
-	_blobMax = blobMax;
-	_blobMin = blobMin;
-}
+

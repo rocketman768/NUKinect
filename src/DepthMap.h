@@ -21,7 +21,7 @@ public:
 	void convertToChar (uchar* dst) const; //assume the memory has been located
 	void Scale(float s); //scale the depth
 	void ScaleSizeNN(float scaleFactor); //ncols = floor(scaleFactor * ncols), nrows = floor(scaleFactor * nrows)
-    void convertToInt( uint16_t* dst ) const;
+    void convertToInt( uint8_t* dst ) const;
 	int NumberOfNonZeroPoints() const;
 	float AvgNonZeroDepth() const;
 

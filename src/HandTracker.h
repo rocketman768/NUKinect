@@ -4,21 +4,33 @@
 #include <opencv/cv.h>
 #include <opencv/cxcore.h>
 #include <opencv/highgui.h>
+#include "pcl/point_types.h"
 
+class HandState
+{
+public:
+	HandState()
+	{
+		exist = false;
+	}
+	cv::Vec3f position;
+	bool exist;
+};
 class HandTracker
 {
 public:
 	HandTracker();
 	~HandTracker();
-	void SetParameters(double threshold, double blobMin, double blobMax);
 	//assume 8bit gray-scale input now
 	int SetNewFrame(cv::Mat& newFrame);		
 	//only 2d tracking now, the 3rd element is always 0 
-	cv::Vec3d getCurrentPosition();
-	cv::Vec3d getDifference();
+	bool getCurrentPosition(cv::Vec3f& position);
+	bool getDifference(cv::Vec3f& difference);
+	double _numForegroundPoints, _numForegroundPointsValidation,_depthDifferenceThreshold;
+	HandState _currentPosition, _lastPosition;
 private:
-	cv::Vec3d _currentPosition, _lastPosition;
-	double _threshold,_blobMin, _blobMax;		
+
+	std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > _points;
 };
 
 #endif

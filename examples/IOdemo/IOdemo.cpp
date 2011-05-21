@@ -49,7 +49,7 @@ bool beginCapture = false;
         }
         
 	}
-    WriteDepthMapBinFileHeader(file,depthMaps.size(),480,640);
+    WriteDepthMapBinFileHeader(file,depthMaps.size(),640,480);
     for (int i=0;i<depthMaps.size();++i)
     {
       WriteDepthMapBinFileNextFrame(file,*depthMaps[i]);
@@ -61,7 +61,7 @@ bool beginCapture = false;
 	int frames, ncols, nrows;
 	ReadDepthMapBinFileHeader(file,frames,ncols,nrows);
 	cout<<frames<<" "<<ncols<<" "<<nrows<<endl;
-    cv::Mat depthMat2(cv::Size(640,480),CV_8UC1);
+    cv::Mat depthMat2(cv::Size(ncols,nrows),CV_8UC1);
 	for (int i=0;i<frames+1;++i)
 	{
         

@@ -1,5 +1,5 @@
 SET( viewdemo_SRC
-  "pcldemo.cpp"
+  "pcldemo_neareast.cpp"
 )
 
 FIND_PACKAGE( "PCL" REQUIRED )

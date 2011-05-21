@@ -21,25 +21,27 @@ using namespace pcl;
 int main()
 {    
 	//... populate cloud
-	FILE* file = fopen("a01_s01_e02_sdepth.bin","rb");
+	FILE* file = fopen("test.bin","rb");
 	int frames, ncols, nrows;
 	ReadDepthMapBinFileHeader(file,frames,ncols,nrows);
-	cout<<frames<<" "<<ncols<<" "<<nrows<<endl;
-	CDepthMap map;
-	map.SetSize(ncols, nrows); 
+	
+	CDepthMap map;	
 	int frameCount = 0;
 	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
-	cv::Mat depthMat(cv::Size(320,240), CV_8UC1);
+	cv::Mat depthMat(cv::Size(ncols,nrows), CV_8UC1), depthf;    
 	cv::namedWindow("test");
 	int boxSize =30;
 	float scale = 5;
+    map.SetSize(ncols, nrows);
 	while (frameCount<frames)
-	{
+	{         
 		ReadDepthMapBinFileNextFrame(file,ncols,nrows,map);
+        cout<<frames<<" "<<ncols<<" "<<nrows<<endl;
 		frameCount++;
-		if (frameCount<20)
+		if (frameCount<100)
 			continue;
-		map.convertToChar(depthMat.data);		
+		map.convertToChar(depthMat.data);
+        depthMat.convertTo(depthf, CV_8UC1, 255/255);
         PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 		cloud->points.resize (nrows*ncols);
 		int count=0;
@@ -48,16 +50,28 @@ int main()
 		for (size_t i=0;i<nrows;++i)  
 			for (size_t j=0;j<ncols;++j)
 			{
+              if (map.GetItem(i,j)>850)
+              {
+                continue;                
+              }
+              else
+              {                
 				cloud->points[count].x=-j;
 				cloud->points[count].y=-i;
 				cloud->points[count].z=-map.GetItem(i,j);
+              }
+              count++;              
                 if (cloud->points[count].z!=0)
                   cloud->points[count].z = cloud->points[count].z - 200;                
 				center_Z = map.GetItem(i,j);
-				center_Y = i;
+				center_Y =i;
 				center_X = j;
 				if (center_X<boxSize||center_X>=ncols-boxSize||center_Y<boxSize||center_Y>=nrows-boxSize)
+                {
+                  
 					continue;
+                }
+                
 				Eigen::Matrix3f covariance_matrix;
 				covariance_matrix.setZero();
 				for (int x = center_X-boxSize; x<center_X+boxSize; x++)
@@ -89,17 +103,15 @@ int main()
                         cout<<center_X<<" "<<center_Y<<" "<<eigen_values(0,0)<<" "<<eigen_values(1,0)<<" "<<eigen_values(2,0)<<endl;						
 						depthMat.at<uint8_t>(center_Y,center_X) = 255;
 						
-					}
-					
+					}					
 				
 // 				if (map.GetItem(i,j)!=0)
-// 					cout<<i<<" "<<j<<"\n";                  
-				count++;
-			}
+// 					cout<<i<<" "<<j<<"\n";
+			}        
             cv::imwrite("test.jpg",depthMat);
            viewer.showCloud (cloud,"cloud");
 			char ch;
-			//cin>>ch;
+			cin>>ch;
             cout<<frameCount<<endl;
             
 			

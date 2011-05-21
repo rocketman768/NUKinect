@@ -11,7 +11,7 @@
 
 
 pthread_t freenect_thread;
-
+HandTracker tracker;
 void* freenect_threadfunc(void* arg) {
   uint32_t lastTimestampDepth = 99999;
   //uint32_t lastTimestampRGB = 99999;
@@ -39,8 +39,12 @@ void* freenect_threadfunc(void* arg) {
     //std::cout << lastTimestamp << "Finished.\n";
     
     depthMat.data = (uchar*) depth.get();
+	tracker.SetNewFrame(depthMat);
+	cv::Vec3f  position = tracker._currentPosition.position;
     depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
     cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
+    if (tracker._currentPosition.exist)
+      cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
     myviewcontrol.loadBuffer(depthColor.data,spec,0);
 
     //rgbMat.data = (uchar*) rgb.get();

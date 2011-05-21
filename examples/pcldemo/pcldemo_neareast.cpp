@@ -15,6 +15,8 @@
 #include "pcl/segmentation/sac_segmentation.h"
 #include <pcl/common/eigen.h>
 #include <algorithm>
+
+
 using namespace std;
 using namespace pcl;
 bool ComparePoint (PointXYZ i, PointXYZ j)
@@ -25,15 +27,15 @@ bool ComparePoint (PointXYZ i, PointXYZ j)
 int main()
 {    
 	//... populate cloud
-	FILE* file = fopen("a01_s01_e02_sdepth.bin","rb");
+	FILE* file = fopen("test.bin","rb");
 	int frames, ncols, nrows;
 	ReadDepthMapBinFileHeader(file,frames,ncols,nrows);
 	cout<<frames<<" "<<ncols<<" "<<nrows<<endl;
 	CDepthMap map;
 	map.SetSize(ncols, nrows); 
 	int frameCount = 0;
-	//pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
-	cv::Mat depthMat(cv::Size(320,240), CV_8UC1);
+	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
+	cv::Mat depthMat(cv::Size(ncols,nrows), CV_8UC1);
 	//cv::namedWindow("test");
     int numForegroundPoints= 80;
     int numForegroundPointsValidation= 400;    
@@ -41,8 +43,8 @@ int main()
 	{
       ReadDepthMapBinFileNextFrame(file,ncols,nrows,map);
       frameCount++;
-      // if (frameCount<20)
-      //    continue;
+       if (frameCount<100)
+          continue;
       map.convertToChar(depthMat.data);		
       PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
       cloud->points.resize (nrows*ncols);
@@ -69,9 +71,9 @@ int main()
         depthMat.at<uint8_t>(-cloud->points[i].y, -cloud->points[i].x) = 255;
 
       cv::imwrite("test.jpg",depthMat);      
-        //viewer.showCloud (cloud,"cloud");
+        viewer.showCloud (cloud,"cloud");
 			char ch;
-			//cin>>ch;
+			cin>>ch;
 			
 	}
 	
