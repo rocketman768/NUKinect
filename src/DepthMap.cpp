@@ -161,7 +161,7 @@ void CDepthMap::convertToChar( uchar* dst ) const
 		}
 }
 
-void CDepthMap::convertToInt( uchar* dst ) const
+void CDepthMap::convertToInt( uint16_t* dst ) const
 {
 	for (int i=0;i<m_nrows;i++)
 		for (int j=0;j<m_ncols;++j)
