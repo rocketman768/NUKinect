@@ -21,32 +21,43 @@ public:
    */
   bool getDepth(uint32_t& lastTimestamp,
                 boost::shared_array<uint8_t>& ret);
-
+                
   /*! Takes \b lastTimestamp as input.
-   *  Returns a shared pointer \b ret by reference that points to a COPY of the RGB data.
+   *  Returns a shared pointer \b ret by reference that points to a COPY of the BGR data.
    *  Also, update  \b lastTimestamp by reference. If the internal timestamp
    *  is the same as \b lastTimestamp , \b ret does not change.
    *  The bool return value is false if the data in \b ret may be invalid.
    */
-  bool getRgb(uint32_t& lastTimestamp,
+  bool getBgr(uint32_t& lastTimestamp,
               boost::shared_array<uint8_t>& ret);
   
+  //! Returns the width of a depth frame.
+  static int getDepthWidth();
+
+  //! Returns the height of a depth frame.
+  static int getDepthHeight();
+  
+  //! Returns the width of an rgb frame.
+  static int getBgrWidth();
+  
+  //! Returns the height of an rgb frame.
+  static int getBgrHeight();
 private:
   
   //! Only called by libfreenect!
-  void VideoCallback(void* rgb, uint32_t timestamp);
+  void VideoCallback(void* bgr, uint32_t timestamp);
   
   //! Only called by libfreenect!
   void DepthCallback(void* depth, uint32_t timestamp);
 
   uint8_t* _depth;
-  uint8_t* _rgb;
+  uint8_t* _bgr;
 
   Mutex _mutex_depth;
-  Mutex _mutex_rgb;
+  Mutex _mutex_bgr;
 
   uint32_t _depthTimestamp;
-  uint32_t _rgbTimestamp;
+  uint32_t _bgrTimestamp;
 };
 
 #endif /* _KINECT_H */

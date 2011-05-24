@@ -12,8 +12,8 @@ int main()
   
   while(true)
   {
-    std::cout << "Getting one frame...";
     KinectIO::instance().kinect().getDepth(lastTimestamp, depth);
-    std::cout << lastTimestamp << "Finished.\n";
+    std::cerr << "Timestamp: " << lastTimestamp << std::endl;
+    usleep(33e3); // Sleep 33 ms.
   }
 }
