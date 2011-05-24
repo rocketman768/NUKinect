@@ -22,8 +22,11 @@ bool beginCapture = false;
 	{
       //std::cout << "Getting one frame...";
         uint32_t tmp = lastTimestamp;
-        while(tmp==lastTimestamp)          
-          KinectIO::instance().kinect().getDepth(lastTimestamp, depth);        
+        while(tmp==lastTimestamp)
+        {
+          KinectIO::instance().kinect().getDepth(lastTimestamp, depth);
+          usleep(15e3); // Sleep 15 ms.
+        }
 		//std::cout << lastTimestamp << "Finished.\n";
         depthMat.data = (uchar*) depth.get();
         depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
