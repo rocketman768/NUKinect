@@ -12,6 +12,9 @@
 
 pthread_t freenect_thread;
 HandTracker tracker;
+int existCounter =0;
+int unexistCounter =0;
+
 void* freenect_threadfunc(void* arg) {
   uint32_t lastTimestampDepth = 99999;
   //uint32_t lastTimestampRGB = 99999;
@@ -26,12 +29,15 @@ void* freenect_threadfunc(void* arg) {
   //cv::namedWindow("test",CV_WINDOW_AUTOSIZE);
   
   bool isDataValid(false);
+  int lastLastStampDepth = 0;
+  
   while(true)  {
     //std::cout << "Getting one frame...";
     isDataValid = myviewcontrol.getDepth(lastTimestampDepth, depth);
-    if (!isDataValid) {
+    if (!isDataValid||lastTimestampDepth==lastLastStampDepth) {
       continue;
     }
+    lastLastStampDepth = lastTimestampDepth;    
     // isDataValid =  myviewcontrol.getRgb(lastTimestampRGB, rgb);
     //if (!isDataValid) {
     //  continue;
@@ -44,7 +50,29 @@ void* freenect_threadfunc(void* arg) {
     depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
     cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
     if (tracker._currentPosition.exist)
+    {
+      existCounter++;
       cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
+    }    
+    else
+    {
+      unexistCounter++;
+      if (unexistCounter>10)
+      existCounter = 0;
+    }
+    
+    
+    cout<<existCounter<<" "<<unexistCounter<<endl;    
+    MouseController& controller   = MouseController::instance();
+    if (existCounter ==10&& unexistCounter>10)
+    {
+      unexistCounter =0;      
+      controller.mousePress(1);
+      controller.mouseRelease(1);
+    }
+    
+        
+    
     myviewcontrol.loadBuffer(depthColor.data,spec,0);
 
     //rgbMat.data = (uchar*) rgb.get();

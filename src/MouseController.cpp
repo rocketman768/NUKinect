@@ -1,4 +1,5 @@
 #include "MouseController.h"
+MouseController* MouseController::_pInstance = NULL;
 
 MouseController::MouseController()
 {

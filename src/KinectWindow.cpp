@@ -51,6 +51,7 @@ static const int imageHeight(480);
 static const QSize imageSize(imageWidth, imageHeight);
 static const int numImageLabels(2);
 
+
 KinectWindow * KinectWindow::_pInstance(NULL);
 //QApplication * KinectWindow::_pQapp(NULL);
 

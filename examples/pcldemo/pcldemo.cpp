@@ -21,7 +21,7 @@ using namespace pcl;
 int main()
 {    
 	//... populate cloud
-	FILE* file = fopen("test.bin","rb");
+	FILE* file = fopen("a03_s03_e03_sdepth.bin","rb");
 	int frames, ncols, nrows;
 	ReadDepthMapBinFileHeader(file,frames,ncols,nrows);
 	
@@ -30,15 +30,15 @@ int main()
 	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
 	cv::Mat depthMat(cv::Size(ncols,nrows), CV_8UC1), depthf;    
 	cv::namedWindow("test");
-	int boxSize =30;
-	float scale = 5;
+	int boxSize =20;
+	float scale = 13;
     map.SetSize(ncols, nrows);
 	while (frameCount<frames)
 	{         
 		ReadDepthMapBinFileNextFrame(file,ncols,nrows,map);
         cout<<frames<<" "<<ncols<<" "<<nrows<<endl;
 		frameCount++;
-		if (frameCount<100)
+		if (frameCount<10)
 			continue;
 		map.convertToChar(depthMat.data);
         depthMat.convertTo(depthf, CV_8UC1, 255/255);
@@ -111,13 +111,16 @@ int main()
             cv::imwrite("test.jpg",depthMat);
            viewer.showCloud (cloud,"cloud");
 			char ch;
-			cin>>ch;
+			//cin>>ch;
             cout<<frameCount<<endl;
             
 			
 	}
 	
-	
+	while (1)
+    {
+    }
+    
     
 	return 1;
 }
