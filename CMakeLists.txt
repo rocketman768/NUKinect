@@ -18,7 +18,6 @@ OPTION( DEBUG_MODE
 
 #==============Custom Cmake Modules=============
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules" )
-
 #================Find Packages==================
 # For pthread
 FIND_PACKAGE( Threads REQUIRED )
@@ -31,7 +30,7 @@ INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIRS} )
 #===========Set release/debug settings==========
 SET( CMAKE_CXX_FLAGS_DEBUG "-g -Wall" )
 SET( LINK_FLAGS_DEBUG "-rdynamic" )
-SET( CMAKE_CXX_FLAGS_RELEASE "-g -Wall " )
+SET( CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall " )
 SET( LINK_FLAGS_RELEASE "-rdynamic" )
 
 IF( DEBUG_MODE )

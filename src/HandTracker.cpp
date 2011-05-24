@@ -61,7 +61,7 @@ int HandTracker::SetNewFrame( cv::Mat& depthf )
         
 	}else
 	{
-		_currentPosition.exist = false;
+      _currentPosition.exist = false;      
 	}
 	return 1;
 }
