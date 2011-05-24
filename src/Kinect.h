@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <boost/shared_array.hpp> // For shared pointers.
 #include "Mutex.h"
+#include "PtCloud.h"
 
 class Kinect : public Freenect::FreenectDevice
 {
@@ -42,6 +43,11 @@ public:
   
   //! Returns the height of an rgb frame.
   static int getBgrHeight();
+  
+  /*! Translate \b depth to a point cloud \b cloud.
+   *  All point locations are in meters.
+   */
+  static void getPointCloud( PtCloud& cloud, boost::shared_array<uint8_t> depth );
 private:
   
   //! Only called by libfreenect!

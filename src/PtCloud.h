@@ -1,10 +1,10 @@
 #ifndef PTCLOUD_H
 #define PTCLOUD_H
 
-#include "Mutex.h"
 #include <QtOpenGL>
 #include <QObject>
 #include <vector>
+#include "Mutex.h"
 
 class PtCloud : public QObject {
  public:
@@ -20,6 +20,8 @@ class PtCloud : public QObject {
    */
   int setPoints(const GLfloat* src, int numPts);
 
+  static const int FloatsPerPt;
+  
  protected:
 
   Mutex _mutex;
