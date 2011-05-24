@@ -1,5 +1,5 @@
 #include <QGLWidget>
-
+#include <string.h> // memcpy()
 #include "PtCloud.h"
 
 const int FloatsPerPt = 3;
@@ -13,12 +13,12 @@ PtCloud::PtCloud(QObject* parent) : QObject(parent) {
 //  ;
 //}
 
-int PtCloud::copyToBuffer(const GLfloat* src, int numPts) {
+int PtCloud::setPoints(const GLfloat* src, int numPts) {
   _mutex.lock();
 
   _numPts = numPts;
-  _bufferVec.resize(FloatsPerPt*_numPts);
-  memcpy(&(_bufferVec[0]), src, numPts*FloatsPerPt*sizeof(float));
+  _points.resize(FloatsPerPt*_numPts);
+  memcpy(&(_points[0]), src, numPts*FloatsPerPt*sizeof(float));
 
   _mutex.unlock();
 
@@ -35,7 +35,7 @@ void PtCloud::draw() {
   
   _mutex.lock();
 
-  const GLfloat* pt(&(_bufferVec[0]));
+  const GLfloat* pt(&(_points[0]));
   for (int i = 0; i < _numPts; i++) {
     glVertex3fv(pt);
     pt += FloatsPerPt;

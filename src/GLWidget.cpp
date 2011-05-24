@@ -79,7 +79,7 @@ GLWidget::GLWidget(QWidget *parent)
 
 int GLWidget::loadPtCloud(const GLfloat* src, int numPts) {
 
-  return cloud->copyToBuffer(src, numPts);
+  return cloud->setPoints(src, numPts);
 }
 
 //! [2]
