@@ -2,7 +2,7 @@
 #include <string.h> // memcpy()
 #include "PtCloud.h"
 
-const int FloatsPerPt = 3;
+const int PtCloud::FloatsPerPt = 3;
 
 PtCloud::PtCloud(QObject* parent) : QObject(parent) {
   _numPts = 0;
@@ -18,7 +18,7 @@ int PtCloud::setPoints(const GLfloat* src, int numPts) {
 
   _numPts = numPts;
   _points.resize(FloatsPerPt*_numPts);
-  memcpy(&(_points[0]), src, numPts*FloatsPerPt*sizeof(float));
+  memcpy(&(_points[0]), src, numPts*FloatsPerPt*sizeof(GLfloat));
 
   _mutex.unlock();
 

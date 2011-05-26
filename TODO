@@ -1,0 +1,3 @@
+Change PtCloud::setPoints to use boost::shared_array.
+
+
