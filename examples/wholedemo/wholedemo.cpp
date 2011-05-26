@@ -29,7 +29,16 @@ void* freenect_threadfunc(void* arg) {
   //cv::namedWindow("test",CV_WINDOW_AUTOSIZE);
   
   bool isDataValid(false);
-  int lastLastStampDepth = 0;
+  uint32_t lastLastStampDepth = 0;
+
+
+
+
+  static float ptc[] = {-.5,-.5,-.5,
+			.5,.5,.5,
+			0,0,0};
+
+  myviewcontrol.loadPtCloud(ptc, 3);
   
   while(true)  {
     //std::cout << "Getting one frame...";
@@ -45,31 +54,31 @@ void* freenect_threadfunc(void* arg) {
     //std::cout << lastTimestamp << "Finished.\n";
     
     depthMat.data = (uchar*) depth.get();
-	tracker.SetNewFrame(depthMat);
-	cv::Vec3f  position = tracker._currentPosition.position;
+    tracker.SetNewFrame(depthMat);
+    cv::Vec3f  position = tracker._currentPosition.position;
     depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
     cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
     if (tracker._currentPosition.exist)
-    {
-      existCounter++;
-      cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
-    }    
+      {
+	existCounter++;
+	cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
+      }    
     else
-    {
-      unexistCounter++;
-      if (unexistCounter>10)
-      existCounter = 0;
-    }
+      {
+	unexistCounter++;
+	if (unexistCounter>10)
+	  existCounter = 0;
+      }
     
     
     cout<<existCounter<<" "<<unexistCounter<<endl;    
     MouseController& controller   = MouseController::instance();
     if (existCounter ==10&& unexistCounter>10)
-    {
-      unexistCounter =0;      
-      controller.mousePress(1);
-      controller.mouseRelease(1);
-    }
+      {
+	unexistCounter =0;      
+	controller.mousePress(1);
+	controller.mouseRelease(1);
+      }
     
         
     
@@ -79,12 +88,6 @@ void* freenect_threadfunc(void* arg) {
     //myviewcontrol.loadBuffer(depthColor.data,spec,1);
     //myview.setBuffer(rgbMat.data,spec,1);
  
-
-    static float ptc[] = {-.5,-.5,-.5,
-			  .5,.5,.5,
-			  0,0,0};
-
-    myviewcontrol.loadPtCloud(ptc, 3);
     //tracker.SetNewFrame(depthf);
     //cv::Vec3d pt = tracker.getCurrentPosition();
     //cv::circle(depthColor,cv::Point(pt(0),pt(1)), 10, cv::Scalar(0,0,255));
