@@ -31,7 +31,7 @@ int main()
 	cv::Mat depthMat(cv::Size(ncols,nrows), CV_8UC1), depthf;    
 	cv::namedWindow("test");
 	int boxSize =20;
-	float scale = 13;
+	float scale = 10;
     map.SetSize(ncols, nrows);
 	while (frameCount<frames)
 	{         
