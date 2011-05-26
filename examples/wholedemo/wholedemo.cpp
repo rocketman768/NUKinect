@@ -11,9 +11,9 @@
 
 
 pthread_t freenect_thread;
-HandTracker tracker;
-int existCounter =0;
-int unexistCounter =0;
+Tracker* tracker;
+TrajectoryIntepretator* intepretator;
+GestureExecutor* executor;
 
 void* freenect_threadfunc(void* arg) {
   uint32_t lastTimestampDepth = 99999;
@@ -45,31 +45,17 @@ void* freenect_threadfunc(void* arg) {
     //std::cout << lastTimestamp << "Finished.\n";
     
     depthMat.data = (uchar*) depth.get();
-	tracker.SetNewFrame(depthMat);
-	cv::Vec3f  position = tracker._currentPosition.position;
+	tracker->SetNewFrame(depthMat);
+	ObjectState	state = tracker->getCurrentPosition();
+	cv::Vec3f  position = state.position;
     depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
     cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
-    if (tracker._currentPosition.exist)
-    {
-      existCounter++;
+    if (state.exist)
+    {    
       cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
     }    
-    else
-    {
-      unexistCounter++;
-      if (unexistCounter>10)
-      existCounter = 0;
-    }
-    
-    
-    cout<<existCounter<<" "<<unexistCounter<<endl;    
-    MouseController& controller   = MouseController::instance();
-    if (existCounter ==10&& unexistCounter>10)
-    {
-      unexistCounter =0;      
-      controller.mousePress(1);
-      controller.mouseRelease(1);
-    }
+    intepretator->SetNewPoint(state);
+	executor->ExecuteGesture(intepretator->GetGestureState());
     
         
     
@@ -95,7 +81,9 @@ void* freenect_threadfunc(void* arg) {
 
 
 int main(int argc, char *argv[]) {
-
+  tracker = new HandTracker();
+  intepretator = new ObjectExistSmoother();
+  executor  = new ClickMouseExecutor();
   QApplication app(argc, argv);
   KinectWindow::instance();
 
@@ -110,6 +98,8 @@ int main(int argc, char *argv[]) {
 
 
   app.exec();
-
+  delete tracker;
+  delete intepretator;
+  delete executor;
   return 0;
 }

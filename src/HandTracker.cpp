@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <MouseController.h>
 using namespace std;
 using namespace pcl;
 
@@ -23,7 +24,7 @@ HandTracker::~HandTracker()
 }
 
 //TODO add adaptive points number adjustment
-int HandTracker::SetNewFrame( cv::Mat& depthf )
+int HandTracker::SetNewFrame( const cv::Mat& depthf )
 {
 	size_t rows= depthf.rows;
 	size_t cols = depthf.cols;
@@ -66,10 +67,9 @@ int HandTracker::SetNewFrame( cv::Mat& depthf )
 	return 1;
 }
 
-bool HandTracker::getCurrentPosition(cv::Vec3f& position)
+ObjectState HandTracker::getCurrentPosition()
 {
-	position = _currentPosition.position;
-	return (_currentPosition.exist);
+	return (_currentPosition);
 }
 
 bool HandTracker::getDifference(cv::Vec3f& difference)
@@ -80,3 +80,45 @@ bool HandTracker::getDifference(cv::Vec3f& difference)
 }
 
 
+
+bool ObjectExistSmoother::SetNewPoint( ObjectState state )
+{
+	if (state.exist)
+	{
+		_existCounter++;		
+	}    
+	else
+	{
+		_unexistCounter++;
+		if (_unexistCounter>10)			
+			_existCounter = 0;
+	}
+
+
+	cout<<_existCounter<<" "<<_unexistCounter<<endl;    
+
+	if (_existCounter ==10&& _unexistCounter>10)
+	{
+		_unexistCounter =0;      
+		_state.state = 1;
+	}else
+	{
+		_state.state=0;
+	}
+
+}
+
+GestureState ObjectExistSmoother::GetGestureState()
+{
+	return _state;
+}
+
+bool ClickMouseExecutor::ExecuteGesture( const GestureState& state )
+{
+	if (state.state==1)
+	{
+		MouseController& controller   = MouseController::instance();
+		controller.mousePress(1);
+		controller.mouseRelease(1);
+	}
+}
