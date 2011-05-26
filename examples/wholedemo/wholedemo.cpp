@@ -39,9 +39,16 @@ void* freenect_threadfunc(void* arg) {
 			0,0,0};
 
   myviewcontrol.loadPtCloud(ptc, 3);
-  
+
+
+  myviewcontrol.setControlSliderFormat(0, -10, 10, 1, 5, 2);
+  myviewcontrol.setControlSliderFormat(1, 0, 10000, 8, 100, 1000);
+  myviewcontrol.setControlSliderFormat(3, 1, 2, 9, 9, 9);
+  myviewcontrol.setControlSliderValue(0, 8);
+
   while(true)  {
-    //std::cout << "Getting one frame...";
+
+
     isDataValid = myviewcontrol.getDepth(lastTimestampDepth, depth);
     if (!isDataValid||lastTimestampDepth==lastLastStampDepth) {
       continue;
@@ -52,30 +59,41 @@ void* freenect_threadfunc(void* arg) {
     //  continue;
     //}
     //std::cout << lastTimestamp << "Finished.\n";
+ 
     
     depthMat.data = (uchar*) depth.get();
-	tracker->SetNewFrame(depthMat);
-	ObjectState	state = tracker->getCurrentPosition();
-	cv::Vec3f  position = state.position;
+    tracker->SetNewFrame(depthMat);
+    ObjectState	state = tracker->getCurrentPosition();
+    cv::Vec3f  position = state.position;
     depthMat.convertTo(depthf, CV_8UC1, 255.0/2048.0);
     cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
     if (state.exist)
-    {    
-      cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
-    }    
+      {    
+	cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
+      }    
     intepretator->SetNewPoint(state);
-	executor->ExecuteGesture(intepretator->GetGestureState());
-        
+    executor->ExecuteGesture(intepretator->GetGestureState());
     
     myviewcontrol.loadBuffer(depthColor.data,spec,0);
 
     //rgbMat.data = (uchar*) rgb.get();
-    //myviewcontrol.loadBuffer(depthColor.data,spec,1);
+    myviewcontrol.loadBuffer(depthColor.data,spec,1);
     //myview.setBuffer(rgbMat.data,spec,1);
- 
-    //tracker.SetNewFrame(depthf);
-    //cv::Vec3d pt = tracker.getCurrentPosition();
-    //cv::circle(depthColor,cv::Point(pt(0),pt(1)), 10, cv::Scalar(0,0,255));
+
+
+    // Kinect::getPointCloud( PtCloud& cloud, depth );
+
+
+   
+    // test code for control sliders
+    int val;
+    for (int i = 0; i < myviewcontrol.getNumControlSlider(); i++) {
+      myviewcontrol.getControlSliderValue(i, &val);
+      printf("%d, ", val);
+    }
+    printf("\n");
+   
+
   }
   return NULL;
 }

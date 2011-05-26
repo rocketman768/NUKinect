@@ -1,6 +1,9 @@
 /****************************************************************************
 **
-** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies),
+** and the following authors:
+** Xu Jiang <jiangxu2011@u.northwestern.edu>
+**
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **

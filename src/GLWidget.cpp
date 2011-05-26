@@ -1,6 +1,9 @@
 /****************************************************************************
  **
- ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies),
+ ** and the following authors:
+ ** Xu Jiang <jiangxu2011@u.northwestern.edu>
+ **
  ** All rights reserved.
  ** Contact: Nokia Corporation (qt-info@nokia.com)
  **
@@ -45,19 +48,15 @@
 #include <math.h>
 
 #include "GLWidget.h"
-//#include "qtlogo.h"
 #include "PtCloud.h"
 
 #ifndef GL_MULTISAMPLE
 #define GL_MULTISAMPLE  0x809D
 #endif
 
-
-//! [0]
 GLWidget::GLWidget(QWidget *parent)
   : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-  //logo = 0;
   _viewSize = 400;
   cloud = 0;
   xRot = 0;
@@ -69,33 +68,21 @@ GLWidget::GLWidget(QWidget *parent)
 
   cloud = new PtCloud(this);
 }
-//! [0]
-
-//! [1]
-//GLWidget::~GLWidget()
-//{
-//}
-//! [1]
 
 int GLWidget::loadPtCloud(const GLfloat* src, int numPts) {
 
   return cloud->setPoints(src, numPts);
 }
 
-//! [2]
 QSize GLWidget::minimumSizeHint() const
-{
-  return QSize(50, 50);
-}
-//! [2]
-
-//! [3]
-QSize GLWidget::sizeHint() const
-//! [3] //! [4]
 {
   return QSize(400, 400);
 }
-//! [4]
+
+QSize GLWidget::sizeHint() const
+{
+  return QSize(500, 500);
+}
 
 static void qNormalizeAngle(int &angle)
 {
@@ -113,7 +100,6 @@ void GLWidget::setViewSize(int s) {
   }
 }
 
-//! [5]
 void GLWidget::setXRotation(int angle)
 {
   qNormalizeAngle(angle);
@@ -123,7 +109,6 @@ void GLWidget::setXRotation(int angle)
     updateGL();
   }
 }
-//! [5]
 
 void GLWidget::setYRotation(int angle)
 {
@@ -145,27 +130,16 @@ void GLWidget::setZRotation(int angle)
   }
 }
 
-//! [6]
 void GLWidget::initializeGL()
 {
   qglClearColor(qtPurple.dark());
 
-  //logo = new QtLogo(this, 64);
-  //logo->setColor(qtGreen.dark());
-
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  //glShadeModel(GL_SMOOTH);
-  //  glEnable(GL_LIGHTING);
-  //glEnable(GL_LIGHT0);
   glEnable(GL_MULTISAMPLE);
-  //static GLfloat lightPosition[4] = { 0.5, 5.0, 7.0, 1.0 };
-  //  glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 }
-//! [6]
 
-//! [7]
 void GLWidget::paintGL()
 {
 
@@ -184,12 +158,9 @@ void GLWidget::paintGL()
   glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
   glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
   glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
-  //   logo->draw();
   cloud->draw();
 }
-//! [7]
 
-//! [8]
 void GLWidget::resizeGL(int width, int height)
 {
   int side = qMin(width, height);
@@ -204,20 +175,16 @@ void GLWidget::resizeGL(int width, int height)
 #endif
   glMatrixMode(GL_MODELVIEW);
 }
-//! [8]
 
 void GLWidget::wheelEvent(QWheelEvent *event) {
   setViewSize(_viewSize + event->delta());
 }
 
-//! [9]
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
   lastPos = event->pos();
 }
-//! [9]
 
-//! [10]
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
   int dx = event->x() - lastPos.x();
@@ -232,4 +199,4 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
   }
   lastPos = event->pos();
 }
-//! [10]
+

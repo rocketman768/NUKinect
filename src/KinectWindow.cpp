@@ -1,44 +1,3 @@
-/****************************************************************************
- **
- ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- ** All rights reserved.
- ** Contact: Nokia Corporation (qt-info@nokia.com)
- **
- ** This file is part of the examples of the Qt Toolkit.
- **
- ** $QT_BEGIN_LICENSE:LGPL$
- ** Commercial Usage
- ** Licensees holding valid Qt Commercial licenses may use this file in
- ** accordance with the Qt Commercial License Agreement provided with the
- ** Software or, alternatively, in accordance with the terms contained in
- ** a written agreement between you and Nokia.
- **
- ** GNU Lesser General Public License Usage
- ** Alternatively, this file may be used under the terms of the GNU Lesser
- ** General Public License version 2.1 as published by the Free Software
- ** Foundation and appearing in the file LICENSE.LGPL included in the
- ** packaging of this file.  Please review the following information to
- ** ensure the GNU Lesser General Public License version 2.1 requirements
- ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
- **
- ** In addition, as a special exception, Nokia gives you certain additional
- ** rights.  These rights are described in the Nokia Qt LGPL Exception
- ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
- **
- ** GNU General Public License Usage
- ** Alternatively, this file may be used under the terms of the GNU
- ** General Public License version 3.0 as published by the Free Software
- ** Foundation and appearing in the file LICENSE.GPL included in the
- ** packaging of this file.  Please review the following information to
- ** ensure the GNU General Public License version 3.0 requirements will be
- ** met: http://www.gnu.org/copyleft/gpl.html.
- **
- ** If you have questions regarding the use of this file, please contact
- ** Nokia at qt-info@nokia.com.
- ** $QT_END_LICENSE$
- **
- ****************************************************************************/
-
 #include <QtGui>
 
 #include "FileKinectInputWidget.h"
@@ -50,6 +9,9 @@ static const int imageWidth(640);
 static const int imageHeight(480);
 static const QSize imageSize(imageWidth, imageHeight);
 static const int numImageLabels(2);
+
+
+static const int numControlSlider(8);
 
 
 KinectWindow * KinectWindow::_pInstance(NULL);
@@ -169,6 +131,11 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   zSlider = createSlider();
   viewSizeSlider = createViewSizeSlider();
 
+  _controlSlider.resize(this->getNumControlSlider());
+  for (int i = 0; i < this->getNumControlSlider(); i++) {
+    _controlSlider[i] = createControlSlider();
+  }
+
   connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
   connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
   connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
@@ -181,16 +148,22 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   connect(_fileInputButton, SIGNAL( clicked() ), this, SLOT( setFileInput() ) );
 
   _mainLayout = new QGridLayout(this);
-  _mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 1  );
-  _mainLayout->addWidget(_rightImageLabel, 0, 1, 1, 6  );
-  _mainLayout->addWidget(glWidget, 2, 0, 2, 1);
-  _mainLayout->addWidget(xSlider, 2, 1, 2, 1);
-  _mainLayout->addWidget(ySlider, 2, 2, 2, 1);
-  _mainLayout->addWidget(zSlider, 2, 3, 2, 1);
-  _mainLayout->addWidget(viewSizeSlider, 2, 4, 2, 1);
-  _mainLayout->addWidget(_inputWidget, 2, 5, 2, 1);
-  _mainLayout->addWidget(_kinectInputButton, 1, 6, 1, 1);
-  _mainLayout->addWidget(_fileInputButton, 2, 6, 1, 1);
+  _mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 6  );
+  _mainLayout->addWidget(_rightImageLabel, 0, 6, 1, 4  );
+  _mainLayout->addWidget(glWidget, 1, 0, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(xSlider, 1, 1, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(ySlider, 1, 2, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(zSlider, 1, 3, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(viewSizeSlider, 1, 4,this->getNumControlSlider(), 1);
+
+  _mainLayout->addWidget(_kinectInputButton, 1, 7, 1, 1);
+  _mainLayout->addWidget(_fileInputButton, 2, 7, 1, 1);
+  _mainLayout->addWidget(_inputWidget, 3, 7, 1, 1);
+
+  for (int i = 0; i < this->getNumControlSlider(); i++) {
+    _mainLayout->addWidget( _controlSlider[i], i+1, 6, 1, 1);
+  }
+
   _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
   setLayout(_mainLayout);
 
@@ -216,6 +189,24 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
 }
 
+int KinectWindow::getNumControlSlider() const {
+  return numControlSlider;
+}
+
+int KinectWindow::setControlSliderFormat(int ind, int minval, int maxval, int singleStep, int pageStep, int tickInterval) {
+
+  if (ind < 0 || ind >= this->getNumControlSlider()) {
+    printf("Error: The ind in setControlSliderFormat is out of range.\n");
+    return 1;
+  }
+  
+  _controlSlider[ind]->setRange(minval, maxval);
+  _controlSlider[ind]->setSingleStep(singleStep);
+  _controlSlider[ind]->setPageStep(pageStep);
+  _controlSlider[ind]->setTickInterval(tickInterval);
+
+  return 0;
+}
 
 bool KinectWindow::getDepth(uint32_t& lastTimestamp,
 			    boost::shared_array<uint8_t>& ret) {
@@ -256,6 +247,41 @@ QSlider *KinectWindow::createViewSizeSlider() {
   slider->setTickPosition(QSlider::TicksRight);
   return slider;
 }
+
+QSlider *KinectWindow::createControlSlider() {
+  QSlider *slider = new QSlider(Qt::Horizontal, this);
+  slider->setRange(0, 100);
+  slider->setSingleStep(1);
+  slider->setPageStep(10);
+  slider->setTickInterval(10);
+  slider->setTickPosition(QSlider::TicksAbove);
+  return slider;
+}
+
+int KinectWindow::setControlSliderValue(int ind, int val) {
+  if (ind < 0 || ind >= this->getNumControlSlider()) {
+    printf("Error: The ind in setControlSliderValue is out of range.\n");
+    return 1;
+  }
+
+  _controlSlider[ind]->setValue(val);
+
+  return 0;
+}
+
+int KinectWindow::getControlSliderValue(int ind, int * val) const{ 
+
+  if (ind < 0 || ind >= this->getNumControlSlider()) {
+    printf("Error: The ind in getControlSliderValue is out of range.\n");
+    return 1;
+  }
+
+  *val = _controlSlider[ind]->value();
+
+  return 0;
+  
+}
+
 
 
 void KinectWindow::keyPressEvent(QKeyEvent *e)
@@ -312,7 +338,7 @@ void KinectWindow::setFileInput() {
   }
 
   _inputWidget = new FileKinectInputWidget(this);
-  _mainLayout->addWidget(_inputWidget, 2, 5, 2, 1);
+  _mainLayout->addWidget(_inputWidget, 3, 7, 1, 1);
   _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
   setLayout(_mainLayout);
 
