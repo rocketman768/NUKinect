@@ -3,7 +3,7 @@
 
 #include "KinectInputWidget.h"
 #include "Mutex.h"
-
+#include "PtCloud.h"
 #include <QGLWidget>
 #include <QWidget>
 #include <QApplication>
@@ -49,7 +49,10 @@ class KinectWindow : public QWidget {
   //int startDrawLoop();
 
   //! Load the point cloud from \b src.
-  int loadPtCloud(const GLfloat* src, int numPts);
+  int loadPtCloud(const float* src, int numPts);
+
+  //! Load the point cloud from PtCloud \b cloud.
+  int loadPtCloud(const PtCloud & cloud);
 
   //! Load 2D image from \b buffer_ptr.
   int loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);

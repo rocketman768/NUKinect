@@ -38,7 +38,7 @@ int KinectWindow::destroyInstance() {
 }
 
 
-int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
+int KinectWindow::loadPtCloud(const float* src, int numPts) {
   _mutex.lock();
 
   int r = glWidget->loadPtCloud(src, numPts);
@@ -49,6 +49,18 @@ int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
   return r;
 }
 
+
+
+int KinectWindow::loadPtCloud(const PtCloud & cloud) {
+  _mutex.lock();
+
+  int r = glWidget->loadPtCloud(cloud);
+
+  this->update();
+
+  _mutex.unlock();
+  return r;
+}
 
 int KinectWindow::loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind) {
 

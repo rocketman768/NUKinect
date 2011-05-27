@@ -31,14 +31,13 @@ void* freenect_threadfunc(void* arg) {
   bool isDataValid(false);
   uint32_t lastLastStampDepth = 0;
 
-
-
-
+  PtCloud cloud;
+  
   static float ptc[] = {-.5,-.5,-.5,
 			.5,.5,.5,
 			0,0,0};
-
-  myviewcontrol.loadPtCloud(ptc, 3);
+  cloud.setPoints(ptc, 3);
+  myviewcontrol.loadPtCloud(cloud);
 
 
   myviewcontrol.setControlSliderFormat(0, -10, 10, 1, 5, 2);
@@ -81,8 +80,7 @@ void* freenect_threadfunc(void* arg) {
     //myview.setBuffer(rgbMat.data,spec,1);
 
 
-    // Kinect::getPointCloud( PtCloud& cloud, depth );
-
+    //    Kinect::getPointCloud( cloud, depth );
 
    
     // test code for control sliders
