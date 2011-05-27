@@ -1,6 +1,7 @@
 #ifndef KINECT_WINDOW_H
 #define KINECT_WINDOW_H
 
+#include "VerboseSlider.h"
 #include "KinectInputWidget.h"
 #include "Mutex.h"
 #include "PtCloud.h"
@@ -86,7 +87,7 @@ class KinectWindow : public QWidget {
    *  \b singleStep and \b pageStep, and the tick interval is 
    *  determined by \b tickInterval.
    */
-  int setControlSliderFormat(int ind, int minval = 0, int maxval = 100, int singleStep = 1, int pageStep = 10, int tickInterval = 10);
+  int setControlSliderFormat(int ind, const QString & title, int minval = 0, int maxval = 100, int singleStep = 1, int pageStep = 10, int tickInterval = 10);
 
   //! Set the value of the control slider with index \b ind
   int setControlSliderValue(int ind, int val);
@@ -140,7 +141,7 @@ class KinectWindow : public QWidget {
   static KinectWindow * _pInstance;
   //static QApplication * _pQapp;
   
-  std::vector <QSlider *> _controlSlider;
+  std::vector <VerboseSlider *> _controlSlider;
 };
 
 #endif

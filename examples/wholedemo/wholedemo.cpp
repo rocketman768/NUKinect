@@ -106,9 +106,9 @@ int main(int argc, char *argv[]) {
   executor  = new ClickMouseExecutor();
   QApplication app(argc, argv);  
   KinectWindow & myviewcontrol = KinectWindow::instance();
-  myviewcontrol.setControlSliderFormat(0, 20, 200, 1, 5, 5);
-  myviewcontrol.setControlSliderFormat(1, 100, 10000, 8, 100, 100);
-  myviewcontrol.setControlSliderFormat(3, 1, 10, 1, 1, 1);
+  myviewcontrol.setControlSliderFormat(0, QString::fromAscii("Hello"), 20, 200, 1, 5, 5);
+  myviewcontrol.setControlSliderFormat(1, QString::fromAscii("World"), 100, 10000, 8, 100, 100);
+  myviewcontrol.setControlSliderFormat(3, QString::fromAscii(""), 1, 10, 1, 1, 1);
   //cv::namedWindow("abc",CV_WINDOW_AUTOSIZE);
   int res = pthread_create(&freenect_thread, NULL, freenect_threadfunc,NULL);
   if (res)
