@@ -29,7 +29,6 @@ void MouseController::GetCursorPos( int &x,int &y )
 
 void MouseController::SetCursorPos( int x,int y )
 {
-	int tmp;
 	XWarpPointer(_Pdisplay, None, _root, 0, 0, 0, 0, x, y);
 	XFlush(_Pdisplay);
 }

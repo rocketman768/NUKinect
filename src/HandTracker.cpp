@@ -30,8 +30,8 @@ int HandTracker::SetNewFrame( const cv::Mat& depthf )
 	size_t cols = depthf.cols;
 	_points.resize(depthf.rows*depthf.cols);
 	int count=0;
-	for (int i=0;i<rows;++i)
-		for (int j=0;j<cols;++j)
+	for (size_t  i=0;i<rows;++i)
+		for (size_t j=0;j<cols;++j)
 			_points[count++] = PointXYZ(i,j,depthf.at<uint16_t>(i,j));
 // 	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
 // 	PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
@@ -105,7 +105,7 @@ bool ObjectExistSmoother::SetNewPoint( ObjectState state )
 	{
 		_state.state=0;
 	}
-
+    return true;    
 }
 
 GestureState ObjectExistSmoother::GetGestureState()
@@ -121,4 +121,5 @@ bool ClickMouseExecutor::ExecuteGesture( const GestureState& state )
 		controller.mousePress(1);
 		controller.mouseRelease(1);
 	}
+    return true;    
 }
