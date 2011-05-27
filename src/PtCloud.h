@@ -17,7 +17,7 @@ class PtCloud {
    */
   int setPoints(const float* src, int numPts);
 
-  //! Gets the coordinate of point \b ind
+  //! Gets the coordinate of point \b ind.
   int getPoint(const int ind, float & x, float & y, float & z) const;
 
   //! Deep copy another point cloud.
@@ -32,6 +32,8 @@ class PtCloud {
 
   Mutex _mutex;
   int _numPts;
+
+  //! Caution: the float is casted to GLFloat in some functions. So if float != GLFloat, some changes are needed.
   std::vector <float> _points;
 
 };

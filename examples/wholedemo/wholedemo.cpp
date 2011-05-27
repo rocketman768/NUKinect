@@ -61,9 +61,9 @@ void* freenect_threadfunc(void* arg) {
     depthMat.data = (uchar*) depth.get();
 	HandTracker* handTracker = (HandTracker*) tracker;
 	int numForegoundPoints, numForegoundPointsValidation, depthThreshold;
-	myviewcontrol.getControlSliderValue(0, &numForegoundPoints);
-	myviewcontrol.getControlSliderValue(1, &numForegoundPointsValidation);
-	myviewcontrol.getControlSliderValue(2, &depthThreshold);
+	myviewcontrol.getControlSliderValue(0, numForegoundPoints);
+	myviewcontrol.getControlSliderValue(1, numForegoundPointsValidation);
+	myviewcontrol.getControlSliderValue(2, depthThreshold);
 	handTracker->NumForegroundPoints(numForegoundPoints);
 	handTracker->NumForegroundPointsValidation(numForegoundPointsValidation);
 	handTracker->DepthDifferenceThreshold(depthThreshold);
@@ -88,7 +88,7 @@ void* freenect_threadfunc(void* arg) {
     // test code for control sliders
     int val;
     for (int i = 0; i < myviewcontrol.getNumControlSlider(); i++) {
-      myviewcontrol.getControlSliderValue(i, &val);
+      myviewcontrol.getControlSliderValue(i, val);
       printf("%d, ", val);
     }
     printf("\n");

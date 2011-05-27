@@ -92,7 +92,7 @@ class KinectWindow : public QWidget {
   int setControlSliderValue(int ind, int val);
 
   //! Get the value \b val of the control slider with index \b ind
-  int getControlSliderValue(int ind, int * val) const;
+  int getControlSliderValue(const int ind, int & val) const;
 
 
   public slots:

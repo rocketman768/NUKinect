@@ -281,14 +281,14 @@ int KinectWindow::setControlSliderValue(int ind, int val) {
   return 0;
 }
 
-int KinectWindow::getControlSliderValue(int ind, int * val) const{ 
+int KinectWindow::getControlSliderValue(const int ind, int & val) const{ 
 
   if (ind < 0 || ind >= this->getNumControlSlider()) {
     printf("Error: The ind in getControlSliderValue is out of range.\n");
     return 1;
   }
 
-  *val = _controlSlider[ind]->value();
+  val = _controlSlider[ind]->value();
 
   return 0;
   
