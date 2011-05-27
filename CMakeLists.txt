@@ -38,7 +38,7 @@ INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIRS} )
 #===========Set release/debug settings==========
 SET( CMAKE_CXX_FLAGS_DEBUG "-g -Wall" )
 SET( LINK_FLAGS_DEBUG "-rdynamic" )
-SET( CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall " )
+SET( CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wno-deprecated" )
 SET( LINK_FLAGS_RELEASE "-rdynamic" )
 
 IF( DEBUG_MODE )
