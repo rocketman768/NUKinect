@@ -1,9 +1,10 @@
 #ifndef KINECT_WINDOW_H
 #define KINECT_WINDOW_H
 
+#include "VerboseSlider.h"
 #include "KinectInputWidget.h"
 #include "Mutex.h"
-
+#include "PtCloud.h"
 #include <QGLWidget>
 #include <QWidget>
 #include <QApplication>
@@ -49,7 +50,10 @@ class KinectWindow : public QWidget {
   //int startDrawLoop();
 
   //! Load the point cloud from \b src.
-  int loadPtCloud(const GLfloat* src, int numPts);
+  int loadPtCloud(const float* src, int numPts);
+
+  //! Load the point cloud from PtCloud \b cloud.
+  int loadPtCloud(const PtCloud & cloud);
 
   //! Load 2D image from \b buffer_ptr.
   int loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind);
@@ -83,13 +87,13 @@ class KinectWindow : public QWidget {
    *  \b singleStep and \b pageStep, and the tick interval is 
    *  determined by \b tickInterval.
    */
-  int setControlSliderFormat(int ind, int minval = 0, int maxval = 100, int singleStep = 1, int pageStep = 10, int tickInterval = 10);
+  int setControlSliderFormat(int ind, const QString & title, int minval = 0, int maxval = 100, int singleStep = 1, int pageStep = 10, int tickInterval = 10);
 
   //! Set the value of the control slider with index \b ind
   int setControlSliderValue(int ind, int val);
 
   //! Get the value \b val of the control slider with index \b ind
-  int getControlSliderValue(int ind, int * val) const;
+  int getControlSliderValue(const int ind, int & val) const;
 
 
   public slots:
@@ -137,7 +141,7 @@ class KinectWindow : public QWidget {
   static KinectWindow * _pInstance;
   //static QApplication * _pQapp;
   
-  std::vector <QSlider *> _controlSlider;
+  std::vector <VerboseSlider *> _controlSlider;
 };
 
 #endif

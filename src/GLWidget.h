@@ -46,10 +46,7 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
-
-
-
-class PtCloud;
+#include "PtCloud.h"
 
 
 const int viewSizeMin = 10;
@@ -65,7 +62,10 @@ public:
     //~GLWidget();
 
     //! Load the point cloud data from /b src.
-    int loadPtCloud(const GLfloat* src, int numPts);
+    int loadPtCloud(const float* src, int numPts);
+
+    //! Load the point cloud data from point cloud /b cloud.
+    int loadPtCloud(const PtCloud & cloud);
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -92,7 +92,7 @@ protected:
 
 
 private:
-    PtCloud *cloud;
+    PtCloud _cloud;
     int _viewSize;
 
     int xRot;

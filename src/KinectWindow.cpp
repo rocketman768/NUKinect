@@ -38,7 +38,7 @@ int KinectWindow::destroyInstance() {
 }
 
 
-int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
+int KinectWindow::loadPtCloud(const float* src, int numPts) {
   _mutex.lock();
 
   int r = glWidget->loadPtCloud(src, numPts);
@@ -49,6 +49,18 @@ int KinectWindow::loadPtCloud(const GLfloat* src, int numPts) {
   return r;
 }
 
+
+
+int KinectWindow::loadPtCloud(const PtCloud & cloud) {
+  _mutex.lock();
+
+  int r = glWidget->loadPtCloud(cloud);
+
+  this->update();
+
+  _mutex.unlock();
+  return r;
+}
 
 int KinectWindow::loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec, int buffer_ind) {
 
@@ -98,19 +110,8 @@ int KinectWindow::loadBuffer(const uchar * buffer_ptr, const NUBufferSpec & spec
 
   _mutex.unlock();
 
-  //  this->repaint();
   return 0;
 }
-
-//int KinectWindow::startDrawLoop() {
-//    if (_pInstance == NULL) {
-//        return 1;
-//    }
-
-//    this->show();
-//    //_pQapp->exec();
-//    return 0;
-//}
 
 
 KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
@@ -133,7 +134,7 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
   _controlSlider.resize(this->getNumControlSlider());
   for (int i = 0; i < this->getNumControlSlider(); i++) {
-    _controlSlider[i] = createControlSlider();
+    _controlSlider[i] = new VerboseSlider(this);//createControlSlider();
   }
 
   connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
@@ -193,19 +194,15 @@ int KinectWindow::getNumControlSlider() const {
   return numControlSlider;
 }
 
-int KinectWindow::setControlSliderFormat(int ind, int minval, int maxval, int singleStep, int pageStep, int tickInterval) {
+int KinectWindow::setControlSliderFormat(int ind, const QString & title, int minval, int maxval, int singleStep, int pageStep, int tickInterval) {
 
   if (ind < 0 || ind >= this->getNumControlSlider()) {
     printf("Error: The ind in setControlSliderFormat is out of range.\n");
     return 1;
   }
-  
-  _controlSlider[ind]->setRange(minval, maxval);
-  _controlSlider[ind]->setSingleStep(singleStep);
-  _controlSlider[ind]->setPageStep(pageStep);
-  _controlSlider[ind]->setTickInterval(tickInterval);
 
-  return 0;
+  return _controlSlider[ind]->setSliderFormat(title, minval, maxval, singleStep, pageStep, tickInterval);
+  
 }
 
 bool KinectWindow::getDepth(uint32_t& lastTimestamp,
@@ -248,16 +245,6 @@ QSlider *KinectWindow::createViewSizeSlider() {
   return slider;
 }
 
-QSlider *KinectWindow::createControlSlider() {
-  QSlider *slider = new QSlider(Qt::Horizontal, this);
-  slider->setRange(0, 100);
-  slider->setSingleStep(1);
-  slider->setPageStep(10);
-  slider->setTickInterval(10);
-  slider->setTickPosition(QSlider::TicksAbove);
-  return slider;
-}
-
 int KinectWindow::setControlSliderValue(int ind, int val) {
   if (ind < 0 || ind >= this->getNumControlSlider()) {
     printf("Error: The ind in setControlSliderValue is out of range.\n");
@@ -269,14 +256,14 @@ int KinectWindow::setControlSliderValue(int ind, int val) {
   return 0;
 }
 
-int KinectWindow::getControlSliderValue(int ind, int * val) const{ 
+int KinectWindow::getControlSliderValue(const int ind, int & val) const{ 
 
   if (ind < 0 || ind >= this->getNumControlSlider()) {
     printf("Error: The ind in getControlSliderValue is out of range.\n");
     return 1;
   }
 
-  *val = _controlSlider[ind]->value();
+  val = _controlSlider[ind]->value();
 
   return 0;
   

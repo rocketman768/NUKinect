@@ -31,14 +31,13 @@ void* freenect_threadfunc(void* arg) {
   bool isDataValid(false);
   uint32_t lastLastStampDepth = 0;
 
-
-
-
+  PtCloud cloud;
+  
   static float ptc[] = {-.5,-.5,-.5,
 			.5,.5,.5,
 			0,0,0};
-
-  myviewcontrol.loadPtCloud(ptc, 3);
+  cloud.setPoints(ptc, 3);
+  myviewcontrol.loadPtCloud(cloud);
 
 
   
@@ -62,9 +61,9 @@ void* freenect_threadfunc(void* arg) {
     depthMat.data = (uchar*) depth.get();
 	HandTracker* handTracker = (HandTracker*) tracker;
 	int numForegoundPoints, numForegoundPointsValidation, depthThreshold;
-	myviewcontrol.getControlSliderValue(0, &numForegoundPoints);
-	myviewcontrol.getControlSliderValue(1, &numForegoundPointsValidation);
-	myviewcontrol.getControlSliderValue(2, &depthThreshold);
+	myviewcontrol.getControlSliderValue(0, numForegoundPoints);
+	myviewcontrol.getControlSliderValue(1, numForegoundPointsValidation);
+	myviewcontrol.getControlSliderValue(2, depthThreshold);
 	handTracker->NumForegroundPoints(numForegoundPoints);
 	handTracker->NumForegroundPointsValidation(numForegoundPointsValidation);
 	handTracker->DepthDifferenceThreshold(depthThreshold);
@@ -85,14 +84,11 @@ void* freenect_threadfunc(void* arg) {
     myviewcontrol.loadBuffer(depthColor.data,spec,1);
     //myview.setBuffer(rgbMat.data,spec,1);
 
-
-    // Kinect::getPointCloud( PtCloud& cloud, depth );
-
    
     // test code for control sliders
     int val;
     for (int i = 0; i < myviewcontrol.getNumControlSlider(); i++) {
-      myviewcontrol.getControlSliderValue(i, &val);
+      myviewcontrol.getControlSliderValue(i, val);
       printf("%d, ", val);
     }
     printf("\n");
@@ -110,9 +106,9 @@ int main(int argc, char *argv[]) {
   executor  = new ClickMouseExecutor();
   QApplication app(argc, argv);  
   KinectWindow & myviewcontrol = KinectWindow::instance();
-  myviewcontrol.setControlSliderFormat(0, 20, 200, 1, 5, 5);
-  myviewcontrol.setControlSliderFormat(1, 100, 10000, 8, 100, 100);
-  myviewcontrol.setControlSliderFormat(3, 1, 10, 1, 1, 1);
+  myviewcontrol.setControlSliderFormat(0, QString::fromAscii("Hello"), 20, 200, 1, 5, 5);
+  myviewcontrol.setControlSliderFormat(1, QString::fromAscii("World"), 100, 10000, 8, 100, 100);
+  myviewcontrol.setControlSliderFormat(3, QString::fromAscii(""), 1, 10, 1, 1, 1);
   //cv::namedWindow("abc",CV_WINDOW_AUTOSIZE);
   int res = pthread_create(&freenect_thread, NULL, freenect_threadfunc,NULL);
   if (res)

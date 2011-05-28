@@ -10,6 +10,7 @@ SET( SRC_FILES
   "DepthMap.cpp"
   "FileKinectInputWidget.cpp"
   "LiveKinectInputWidget.cpp"
+  "VerboseSlider.cpp"
 )
 
 # All header files that should be moc'd.
@@ -17,6 +18,7 @@ SET( MOC_HDRS
   "LiveKinectInputWidget.h"
   "FileKinectInputWidget.h"
   "KinectInputWidget.h"
+  "VerboseSlider.h"
   "GLWidget.h"
   "KinectWindow.h"
 )
