@@ -56,7 +56,9 @@ int HandTracker::SetNewFrame( const cv::Mat& depthf )
 		mean_Y /= _numForegroundPoints;
 		mean_Z /= _numForegroundPoints;
 		//cv::imwrite("test.jpg",testMat);
+        #ifdef DEBUG
 		cout<<_points[_numForegroundPointsValidation].z-_points[_numForegroundPoints].z<<endl;
+        #endif
 		_currentPosition.position = cv::Vec3f(mean_X,mean_Y,mean_Z);
         _currentPosition.exist = true;
         
@@ -92,10 +94,7 @@ bool ObjectExistSmoother::SetNewPoint( ObjectState state )
 		_unexistCounter++;
 		if (_unexistCounter>10)			
 			_existCounter = 0;
-	}
-
-
-	cout<<_existCounter<<" "<<_unexistCounter<<endl;    
+	}	
 
 	if (_existCounter ==10&& _unexistCounter>10)
 	{
