@@ -7,7 +7,17 @@
 using namespace std;
 using namespace pcl;
 
-
+void print_matrix( cv::Mat &mat ) 
+{
+	for (int i=0;i<mat.rows;++i)
+	{
+		for (int j=0;j<mat.cols;++j)
+		{
+			cout<<mat.at<float>(i,j)<<" ";
+		}
+		cout<<endl;
+	}
+}
 bool ComparePoint (PointXYZ i, PointXYZ j)
 {
 	return (i.z<j.z);  
@@ -65,6 +75,7 @@ int HandTracker::SetNewFrame( const cv::Mat& depthf )
 	}else
 	{
       _currentPosition.exist = false;      
+	  _currentPosition.position = _lastPosition.position; //for kalman filtering
 	}
 	return 1;
 }
@@ -121,4 +132,60 @@ bool ClickMouseExecutor::ExecuteGesture( const GestureState& state )
 		controller.mouseRelease(1);
 	}
     return true;    
+}
+
+bool VelocityEstimator::SetNewPoint( ObjectState state )
+{
+	cv::Mat measurement  = (cv::Mat_<float>(2,1)<<state.position[0],state.position[1]);
+	_kf.predict();
+// 	print_matrix(measurement);
+// 	print_matrix(_kf.measurementMatrix);
+// 	print_matrix(_kf.transitionMatrix);
+// 	print_matrix(_kf.processNoiseCov);
+// 	print_matrix(_kf.measurementNoiseCov);
+	_kf.correct(measurement);
+	print_matrix(_kf.statePost);
+	float v_x = _kf.statePost.at<float>(3,0);
+	float v_y = _kf.statePost.at<float>(4,0);
+	if (_velocities.size()<10)
+		_velocities.push_back(cv::Vec2f(v_x,v_y));
+	else
+	{
+		_velocities.erase(_velocities.begin());
+		_velocities.push_back(cv::Vec2f(v_x,v_y));
+	}
+	_framecout++;
+	return true;
+}
+
+GestureState VelocityEstimator::GetGestureState()
+{    
+	GestureState state;
+	if (_velocities.size()>=10)
+	{
+		list<cv::Vec2f>::iterator iter = _velocities.begin();
+		float sum =0;
+		int count =0;
+		for (;iter!=_velocities.end();++iter)
+		{
+			sum +=(*iter)[0];
+			count++;
+		}
+		cout<<"averge velocity:"<<sum/count<<endl;
+		if (sum/count>5&&_framecout>30)
+		{
+			state.state=1;
+			_framecout=0;
+
+		}else
+		{
+			state.state=0;
+		}
+	}
+	else
+	{
+		state.state= 0;
+	}
+
+	return state;
 }

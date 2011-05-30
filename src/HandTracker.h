@@ -5,6 +5,7 @@
 #include <opencv/cxcore.h>
 #include <opencv/highgui.h>
 #include "pcl/point_types.h"
+#include <list>
 //! the class for the gesture state, currently use integer to represent the states
 class GestureState
 {
@@ -72,6 +73,34 @@ public:
 private:
 	int _existCounter,_unexistCounter;
 	GestureState _state;
+};
+
+class VelocityEstimator:public TrajectoryIntepretator
+{
+public:
+	VelocityEstimator():_kf(4,2),_currentState(4,1,CV_32F),_framecout(0)
+	{		
+		_kf.transitionMatrix =*(cv::Mat_<float>(4,4)<<1,0,1,0,0,1,0,1,0,0,1,0,0,0,1);
+		_kf.measurementMatrix =*(cv::Mat_<float>(2,4)<<1,0,0,0,0,1,0,0);
+		cv::setIdentity(_kf.processNoiseCov, cv::Scalar::all(1));
+		cv::setIdentity(_kf.measurementNoiseCov, cv::Scalar::all(1));
+		cv::setIdentity(_kf.errorCovPost,cv::Scalar::all(1));
+		cv::Mat temp(4,1,CV_32F);
+		cv::randn(temp, cv::Scalar::all(100), cv::Scalar::all(0.1));
+		_kf.statePost = temp;
+
+	}
+	~VelocityEstimator()
+	{}
+	virtual bool SetNewPoint(ObjectState state);
+	virtual GestureState GetGestureState();
+private:
+	cv::KalmanFilter _kf;
+	cv::Mat _currentState;
+	list<cv::Vec2f> _velocities;
+	double _framecout;
+
+
 };
 //! The pure virtual Gesture Executor class, which execute some actions according to some gesture states
 class GestureExecutor

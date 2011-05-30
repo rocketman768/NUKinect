@@ -77,6 +77,7 @@ void* freenect_threadfunc(void* arg) {
 	cv::circle(depthColor,cv::Point2f(position[1],position[0]),100,cv::Scalar(0,255,0));
       }    	
     intepretator->SetNewPoint(state);
+	//intepretator->GetGestureState();
     executor->ExecuteGesture(intepretator->GetGestureState());
     myviewcontrol.loadBuffer(depthColor.data,spec,0);
 
@@ -102,7 +103,7 @@ void* freenect_threadfunc(void* arg) {
 
 int main(int argc, char *argv[]) {
   tracker = new HandTracker();
-  intepretator = new ObjectExistSmoother();
+  intepretator = new VelocityEstimator();
   executor  = new ClickMouseExecutor();
   QApplication app(argc, argv);  
   KinectWindow & myviewcontrol = KinectWindow::instance();
