@@ -61,6 +61,8 @@ GLWidget::GLWidget(QWidget *parent)
   xRot = 0;
   yRot = 0;
   zRot = 0;
+  _horiTranslation = 0;
+  _vertTranslation = 0;
 
   //qtGreen = QColor::fromCmykF(0.40, 0.0, 1.0, 0.0);
   qtPurple = QColor::fromCmykF(0.39, 0.39, 0.0, 0.0);
@@ -78,12 +80,12 @@ int GLWidget::loadPtCloud(const PtCloud & cloud_in) {
 
 QSize GLWidget::minimumSizeHint() const
 {
-  return QSize(400, 400);
+  return QSize(500, 400);
 }
 
 QSize GLWidget::sizeHint() const
 {
-  return QSize(500, 500);
+  return QSize(500, 400);
 }
 
 static void qNormalizeAngle(int &angle)
@@ -94,11 +96,25 @@ static void qNormalizeAngle(int &angle)
     angle -= 360 * 16;
 }
 
+void GLWidget::setHoriTranslation(int t) {
+  if (_horiTranslation != t) {
+    _horiTranslation = t;
+    updateGL();
+  }
+}
+
+void GLWidget::setVertTranslation(int t) {
+  if (_vertTranslation != t) {
+    _vertTranslation = t;
+    updateGL();
+  }
+}
+
 void GLWidget::setViewSize(int s) {
   if (s != _viewSize && s <= viewSizeMax && s >= viewSizeMin) {
-     _viewSize = s;
-     emit viewSizeChanged(s);
-     updateGL();
+    _viewSize = s;
+    emit viewSizeChanged(s);
+    updateGL();
   }
 }
 
@@ -156,7 +172,7 @@ void GLWidget::paintGL()
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
-  glTranslatef(0.0, 0.0, -10.0);
+  glTranslatef(-_horiTranslation/10.0, -_vertTranslation/10.0, -10.0);
   glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
   glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
   glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
@@ -202,3 +218,35 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
   lastPos = event->pos();
 }
 
+/*
+void GLWidget::keyPressEvent(QKeyEvent *e) {
+
+  switch(e->key()) {
+
+  case Qt::Key_Left:
+    printf("L");
+    break;
+  case Qt::Key_Right:
+
+    printf("R");
+
+    break;
+  case Qt::Key_Down:
+
+    printf("D");
+    break;
+  case Qt::Key_Up:
+
+    printf("U");
+    break;
+  case Qt::Key_Space:
+
+    printf("S");
+    break;
+
+  default:
+    QWidget::keyPressEvent(e);
+  }
+
+}
+*/

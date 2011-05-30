@@ -71,6 +71,8 @@ public:
     QSize sizeHint() const;
 
 public slots:
+    void setHoriTranslation(int t);
+    void setVertTranslation(int t);
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
@@ -89,11 +91,17 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-
+    //    void keyPressEvent(QKeyEvent *event);
 
 private:
     PtCloud _cloud;
     int _viewSize;
+
+    //! Horizontal translation, used by horiTranslation/10
+    int _horiTranslation;
+
+    //! Vertical translation, used by vertTranslation/10
+    int _vertTranslation;
 
     int xRot;
     int yRot;

@@ -17,13 +17,12 @@ GestureExecutor* executor;
 
 void* freenect_threadfunc(void* arg) {
   uint32_t lastTimestampDepth = 99999;
-  //uint32_t lastTimestampRGB = 99999;
+  //  uint32_t lastTimestampRgb = 99999;
   boost::shared_array<uint8_t> depth;
-  boost::shared_array<uint8_t> rgb;
+  //  boost::shared_array<uint8_t> rgb;
   cv::Mat depthMat(cv::Size(640,480),CV_16UC1),depthf,depthColor;
   cv::Mat rgbMat(cv::Size(640,480),CV_8UC3);
   KinectWindow & myviewcontrol = KinectWindow::instance();
-  //HandTracker tracker;
   NUBufferSpec spec(NUBufferSpec::RGB);
 
   //cv::namedWindow("test",CV_WINDOW_AUTOSIZE);
@@ -41,8 +40,6 @@ void* freenect_threadfunc(void* arg) {
 
 
   
- 
-
   while(true)  {
 
 
@@ -51,22 +48,21 @@ void* freenect_threadfunc(void* arg) {
       continue;
     }
     lastLastStampDepth = lastTimestampDepth;    
-    // isDataValid =  myviewcontrol.getRgb(lastTimestampRGB, rgb);
+    
+    //   isDataValid =  myviewcontrol.getRgb(lastTimestampRgb, rgb);
     //if (!isDataValid) {
     //  continue;
     //}
-    //std::cout << lastTimestamp << "Finished.\n";
- 
     
     depthMat.data = (uchar*) depth.get();
-	HandTracker* handTracker = (HandTracker*) tracker;
-	int numForegoundPoints, numForegoundPointsValidation, depthThreshold;
-	myviewcontrol.getControlSliderValue(0, numForegoundPoints);
-	myviewcontrol.getControlSliderValue(1, numForegoundPointsValidation);
-	myviewcontrol.getControlSliderValue(2, depthThreshold);
-	handTracker->NumForegroundPoints(numForegoundPoints);
-	handTracker->NumForegroundPointsValidation(numForegoundPointsValidation);
-	handTracker->DepthDifferenceThreshold(depthThreshold);
+    HandTracker* handTracker = (HandTracker*) tracker;
+    int numForegoundPoints, numForegoundPointsValidation, depthThreshold;
+    myviewcontrol.getControlSliderValue(0, numForegoundPoints);
+    myviewcontrol.getControlSliderValue(1, numForegoundPointsValidation);
+    myviewcontrol.getControlSliderValue(2, depthThreshold);
+    handTracker->NumForegroundPoints(numForegoundPoints);
+    handTracker->NumForegroundPointsValidation(numForegoundPointsValidation);
+    handTracker->DepthDifferenceThreshold(depthThreshold);
     tracker->SetNewFrame(depthMat);
     ObjectState	state = tracker->getCurrentPosition();
     cv::Vec3f  position = state.position;
@@ -83,16 +79,16 @@ void* freenect_threadfunc(void* arg) {
 
     //rgbMat.data = (uchar*) rgb.get();
     myviewcontrol.loadBuffer(depthColor.data,spec,1);
-    //myview.setBuffer(rgbMat.data,spec,1);
-
+    //myviewcontrol.loadBuffer(rgb.get(),spec,1);
+    //    myviewcontrol.loadBuffer(rgbMat.data, spec, 1);
    
     // test code for control sliders
-    int val;
-    for (int i = 0; i < myviewcontrol.getNumControlSlider(); i++) {
-      myviewcontrol.getControlSliderValue(i, val);
-      printf("%d, ", val);
-    }
-    printf("\n");
+    //int val;
+    //for (int i = 0; i < myviewcontrol.getNumControlSlider(); i++) {
+     // myviewcontrol.getControlSliderValue(i, val);
+    //  printf("%d, ", val);
+    //}
+   // printf("\n");
    
 
   }

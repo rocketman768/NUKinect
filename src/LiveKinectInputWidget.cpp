@@ -11,6 +11,7 @@ bool LiveKinectInputWidget::getDepth(uint32_t& lastTimestamp, boost::shared_arra
 
 
 bool LiveKinectInputWidget::getRgb(uint32_t& lastTimestamp, boost::shared_array<uint8_t>& ret) {
+  
+  return KinectIO::instance().kinect().getBgr(lastTimestamp, ret);
 
-  return false;
 }
