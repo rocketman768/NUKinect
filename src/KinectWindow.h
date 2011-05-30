@@ -126,6 +126,8 @@ class KinectWindow : public QWidget {
   bool _leftUpdate;
   bool _rightUpdate;
 
+  QSlider *_horiSlider;
+  QSlider *_vertSlider;
   GLWidget *glWidget;
   QSlider *xSlider;
   QSlider *ySlider;

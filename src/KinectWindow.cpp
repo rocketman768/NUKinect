@@ -127,6 +127,21 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
   _kinectInputButton = new QPushButton("Kinect Input", this);
   _fileInputButton = new QPushButton("File Input", this);
 
+  _horiSlider = new QSlider(Qt::Vertical, this);
+  _horiSlider->setRange(-100, 100);
+  _horiSlider->setSingleStep(1);
+  _horiSlider->setPageStep(10);
+  _horiSlider->setTickInterval(10);
+  _horiSlider->setTickPosition(QSlider::TicksRight);
+
+  _vertSlider = new QSlider(Qt::Vertical, this);
+  _vertSlider->setRange(-100, 100);
+  _vertSlider->setSingleStep(1);
+  _vertSlider->setPageStep(10);
+  _vertSlider->setTickInterval(10);
+  _vertSlider->setTickPosition(QSlider::TicksRight);
+
+
   xSlider = createSlider();
   ySlider = createSlider();
   zSlider = createSlider();
@@ -137,6 +152,9 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
     _controlSlider[i] = new VerboseSlider(this);//createControlSlider();
   }
 
+  
+  connect(_horiSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setHoriTranslation(int)));
+  connect(_vertSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setVertTranslation(int)));
   connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
   connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
   connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
@@ -150,19 +168,21 @@ KinectWindow::KinectWindow(QWidget* parent) : QWidget(parent) {
 
   _mainLayout = new QGridLayout(this);
   _mainLayout->addWidget(_leftImageLabel, 0, 0, 1, 6  );
-  _mainLayout->addWidget(_rightImageLabel, 0, 6, 1, 4  );
+  _mainLayout->addWidget(_rightImageLabel, 0, 10, 1, 4  );
   _mainLayout->addWidget(glWidget, 1, 0, this->getNumControlSlider(), 1);
-  _mainLayout->addWidget(xSlider, 1, 1, this->getNumControlSlider(), 1);
-  _mainLayout->addWidget(ySlider, 1, 2, this->getNumControlSlider(), 1);
-  _mainLayout->addWidget(zSlider, 1, 3, this->getNumControlSlider(), 1);
-  _mainLayout->addWidget(viewSizeSlider, 1, 4,this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(_horiSlider, 1, 1, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(_vertSlider, 1, 2, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(xSlider, 1, 3, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(ySlider, 1, 4, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(zSlider, 1, 5, this->getNumControlSlider(), 1);
+  _mainLayout->addWidget(viewSizeSlider, 1, 6,this->getNumControlSlider(), 1);
 
-  _mainLayout->addWidget(_kinectInputButton, 1, 7, 1, 1);
-  _mainLayout->addWidget(_fileInputButton, 2, 7, 1, 1);
-  _mainLayout->addWidget(_inputWidget, 3, 7, 1, 1);
+  _mainLayout->addWidget(_kinectInputButton, 1, 11, 1, 1);
+  _mainLayout->addWidget(_fileInputButton, 2, 11, 1, 1);
+  _mainLayout->addWidget(_inputWidget, 3, 11, 1, 1);
 
   for (int i = 0; i < this->getNumControlSlider(); i++) {
-    _mainLayout->addWidget( _controlSlider[i], i+1, 6, 1, 1);
+    _mainLayout->addWidget( _controlSlider[i], i+1, 10, 1, 1);
   }
 
   _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -325,7 +345,7 @@ void KinectWindow::setFileInput() {
   }
 
   _inputWidget = new FileKinectInputWidget(this);
-  _mainLayout->addWidget(_inputWidget, 3, 7, 1, 1);
+  _mainLayout->addWidget(_inputWidget, 3, 11, 1, 1);
   _mainLayout->setSizeConstraint(QLayout::SetFixedSize);
   setLayout(_mainLayout);
 
