@@ -21,7 +21,7 @@ using namespace pcl;
 int main()
 {    
 	//... populate cloud
-	FILE* file = fopen("a03_s03_e03_sdepth.bin","rb");
+	FILE* file = fopen("test.bin","rb");
 	int frames, ncols, nrows;
 	ReadDepthMapBinFileHeader(file,frames,ncols,nrows);
 	
@@ -30,8 +30,8 @@ int main()
 	pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
 	cv::Mat depthMat(cv::Size(ncols,nrows), CV_8UC1), depthf;    
 	cv::namedWindow("test");
-	int boxSize =20;
-	float scale = 10;
+	int boxSize =15;
+	float scale = 6;
     map.SetSize(ncols, nrows);
 	while (frameCount<frames)
 	{         
@@ -42,6 +42,8 @@ int main()
 			continue;
 		map.convertToChar(depthMat.data);
         depthMat.convertTo(depthf, CV_8UC1, 255/255);
+        cv::Mat depthColor;
+       cv::cvtColor(depthf,depthColor,CV_GRAY2RGB);
         PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 		cloud->points.resize (nrows*ncols);
 		int count=0;
@@ -101,14 +103,18 @@ int main()
 					if (abs(log((eigen_values(2,0) + 0.1)/(eigen_values(1,0)+0.1)))>log(scale)&&eigen_values(0,0)!=0)
 					{
                         cout<<center_X<<" "<<center_Y<<" "<<eigen_values(0,0)<<" "<<eigen_values(1,0)<<" "<<eigen_values(2,0)<<endl;						
-						depthMat.at<uint8_t>(center_Y,center_X) = 255;
+						//depthMat.at<uint8_t>(center_Y,center_X) = 255;
+                        
+                        //depthColor.at<cv::Scalar>(center_Y,center_X) = cv::Scalar(255,0,0);
+                        cv::circle(depthColor,cv::Point2f(center_X,center_Y),2,cv::Scalar(0,255,0));
 						
 					}					
 				
 // 				if (map.GetItem(i,j)!=0)
 // 					cout<<i<<" "<<j<<"\n";
-			}        
-            cv::imwrite("test.jpg",depthMat);
+			}
+
+            cv::imwrite("test.jpg",depthColor);
            viewer.showCloud (cloud,"cloud");
 			char ch;
 			//cin>>ch;

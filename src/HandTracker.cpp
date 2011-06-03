@@ -136,6 +136,7 @@ bool ClickMouseExecutor::ExecuteGesture( const GestureState& state )
 
 bool VelocityEstimator::SetNewPoint( ObjectState state )
 {
+	_smoother.SetNewPoint(state);
 	cv::Mat measurement  = (cv::Mat_<float>(2,1)<<state.position[0],state.position[1]);
 	_kf.predict();
 // 	print_matrix(measurement);
@@ -144,7 +145,9 @@ bool VelocityEstimator::SetNewPoint( ObjectState state )
 // 	print_matrix(_kf.processNoiseCov);
 // 	print_matrix(_kf.measurementNoiseCov);
 	_kf.correct(measurement);
+#if DEBUG
 	print_matrix(_kf.statePost);
+#endif
 	float v_x = _kf.statePost.at<float>(3,0);
 	float v_y = _kf.statePost.at<float>(4,0);
 	if (_velocities.size()<10)
@@ -188,4 +191,25 @@ GestureState VelocityEstimator::GetGestureState()
 	}
 
 	return state;
+}
+
+bool VelocityEstimator::GetLocation(cv::Vec3f & pos)
+{	
+	pos = cv::Vec3f(_kf.statePost.at<float>(0,0),_kf.statePost.at<float>(1,0),-1);
+	if (_smoother.ExistCounter()>=10||_smoother.UnexistCounter()<10)
+		return true;
+	else
+		return false;
+}
+
+VelocityEstimator::VelocityEstimator() :_kf(4,2),_currentState(4,1,CV_32F),_framecout(0)
+{
+	_kf.transitionMatrix =*(cv::Mat_<float>(4,4)<<1,0,1,0,0,1,0,1,0,0,1,0,0,0,1);
+	_kf.measurementMatrix =*(cv::Mat_<float>(2,4)<<1,0,0,0,0,1,0,0);
+	cv::setIdentity(_kf.processNoiseCov, cv::Scalar::all(1));
+	cv::setIdentity(_kf.measurementNoiseCov, cv::Scalar::all(1));
+	cv::setIdentity(_kf.errorCovPost,cv::Scalar::all(1));
+	cv::Mat temp(4,1,CV_32F);
+	cv::randn(temp, cv::Scalar::all(100), cv::Scalar::all(0.1));
+	_kf.statePost = temp;
 }

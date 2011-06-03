@@ -6,11 +6,14 @@
 #include <opencv/highgui.h>
 #include "pcl/point_types.h"
 #include <list>
+
 //! the class for the gesture state, currently use integer to represent the states
 class GestureState
 {
 public:
-	int state;
+	GestureState(int s):state(s){}	
+	GestureState(){}
+	int state;	
 };
 
 //! the object state class, curently have the location of a object and whether this object exists in this frame
@@ -63,43 +66,38 @@ class ObjectExistSmoother:public TrajectoryIntepretator
 public:
 	ObjectExistSmoother():_existCounter(0),_unexistCounter(0)
 	{
-
 	}
 	virtual ~ObjectExistSmoother()
 	{
 	}
 	virtual bool SetNewPoint(ObjectState state);
 	virtual GestureState GetGestureState();
+	int ExistCounter() const { return _existCounter; }
+	int UnexistCounter() const { return _unexistCounter; }
 private:
 	int _existCounter,_unexistCounter;
+	
+	void UnexistCounter(int val) { _unexistCounter = val; }
+
+	void ExistCounter(int val) { _existCounter = val; }
 	GestureState _state;
 };
 
 class VelocityEstimator:public TrajectoryIntepretator
 {
 public:
-	VelocityEstimator():_kf(4,2),_currentState(4,1,CV_32F),_framecout(0)
-	{		
-		_kf.transitionMatrix =*(cv::Mat_<float>(4,4)<<1,0,1,0,0,1,0,1,0,0,1,0,0,0,1);
-		_kf.measurementMatrix =*(cv::Mat_<float>(2,4)<<1,0,0,0,0,1,0,0);
-		cv::setIdentity(_kf.processNoiseCov, cv::Scalar::all(1));
-		cv::setIdentity(_kf.measurementNoiseCov, cv::Scalar::all(1));
-		cv::setIdentity(_kf.errorCovPost,cv::Scalar::all(1));
-		cv::Mat temp(4,1,CV_32F);
-		cv::randn(temp, cv::Scalar::all(100), cv::Scalar::all(0.1));
-		_kf.statePost = temp;
-
-	}
+	VelocityEstimator();
 	~VelocityEstimator()
 	{}
 	virtual bool SetNewPoint(ObjectState state);
 	virtual GestureState GetGestureState();
+	bool GetLocation(cv::Vec3f& pos);	
 private:
 	cv::KalmanFilter _kf;
 	cv::Mat _currentState;
 	list<cv::Vec2f> _velocities;
 	double _framecout;
-
+	ObjectExistSmoother _smoother;
 
 };
 //! The pure virtual Gesture Executor class, which execute some actions according to some gesture states
