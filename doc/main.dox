@@ -1,0 +1,26 @@
+/*!
+ \mainpage The NUKinect Library
+
+  \section sec_purpose Purpose
+
+  NUKinect is a library meant to provide convenient functions to use the
+  Microsoft Kinect camera to do Computer Vision applications such as tracking.
+  We hope that it can reduce the amount of effort required to create such
+  applications so that more time can be spent on the relevant research rather
+  than the coding.
+
+  \section sec_license Copyright and License
+
+  The NUKinect library is Copyright Jiang Wang \<wangjiangb@gmail.com\>,
+  Jiang Xu \<jiangxu2011@u.northwestern.edu\>, and Philip G. Lee
+  \<rocketman768@gmail.com\> under the GNU LGPL. This means that the code
+  will always remain open and free, and that you can link to our library
+  for free. For more information, read the COPYING and COPYING.LESSER
+  files included with the source code.
+
+  \section sec_authors Authors
+
+  \image html authors.jpg
+
+  From left to right, Philip G. Lee, Jiang Xu, and Jiang Wang.
+ */
